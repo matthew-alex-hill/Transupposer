@@ -19,7 +19,7 @@ public class transposerView implements Updatable{
   private JButton outputRootButton = new JButton("Submit");
   private JFileChooser inputFileChooser = new JFileChooser();
 
-  public transposerView() {
+  public transposerView(Model model) {
     JFrame frame = new JFrame("Transupposer v0.8");
     frame.setSize(800, 600);
 
@@ -28,6 +28,9 @@ public class transposerView implements Updatable{
     rootsPanel.add(inputRootButton);
     rootsPanel.add(outputRootField);
     rootsPanel.add(outputRootButton);
+
+    inputRootButton.addActionListener(new SubmitController(model, true, inputRootField));
+    outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
 
     JPanel guiPanel = new JPanel();
     guiPanel.setLayout(new BoxLayout(guiPanel, BoxLayout.PAGE_AXIS));

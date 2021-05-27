@@ -20,7 +20,7 @@ public class CommandLineInterface {
     int inputMode, outputMode;
 
     System.out.println("Please enter the root note of the input key");
-    inputRoot = getNoteFromName(scanner.nextLine());
+    inputRoot = Note.getNoteFromName(scanner.nextLine());
     if (!checkNote(inputRoot)) {
       System.out.println("Invalid note entered");
       return;
@@ -34,7 +34,7 @@ public class CommandLineInterface {
     }
 
     System.out.println("Please enter the root note of the output key");
-    outputRoot = getNoteFromName(scanner.nextLine());
+    outputRoot = Note.getNoteFromName(scanner.nextLine());
     if (!checkNote(outputRoot)) {
       System.out.println("Invalid note entered");
       return;
@@ -101,56 +101,6 @@ public class CommandLineInterface {
   /* Checks if a Transposition.Note object is valid or not */
   private static boolean checkNote(Note note) {
     return note != null;
-  }
-
-  /* Creates a Transposition.Note object from a note name
-  *  Transposition.Note names begin with a valid note letter eg C or c
-  *  Then any number of 'b' or '#' characters can be added
-  *  Returns null if an invalid string is provided */
-  private static Note getNoteFromName(String input) {
-    int note;
-
-    if (input.length() == 0) {
-      return null;
-    }
-
-    switch (input.toUpperCase().charAt(0)) {
-      case 'C':
-        note = 0;
-        break;
-      case 'D':
-        note = 2;
-        break;
-      case 'E':
-        note = 4;
-        break;
-      case 'F':
-        note = 5;
-        break;
-      case 'G':
-        note = 7;
-        break;
-      case 'A':
-        note = 9;
-        break;
-      case 'B':
-        note = 11;
-        break;
-      default:
-        return null;
-    }
-
-    for (int i = 1; i < input.length(); i++) {
-      if (input.charAt(i) == 'b') {
-        note--;
-      } else if (input.charAt(i) == '#') {
-        note++;
-      } else {
-        return new Note(note);
-      }
-    }
-
-    return new Note(note);
   }
 
 }

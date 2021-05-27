@@ -8,7 +8,8 @@ import java.util.List;
 
 public class transposerModel implements Model{
 
-  private int inputMode, outputMode, inputRoot, outputRoot;
+  private int inputMode, outputMode;
+  private Note inputRoot, outputRoot;
   private String inputFile, outputFile;
 
   private final List<Updatable> views;
@@ -16,9 +17,9 @@ public class transposerModel implements Model{
   public transposerModel() {
     this.views = new ArrayList<>();
     this.inputMode = 0;
-    this.inputRoot = 0;
+    this.inputRoot = new Note(0);
     this.outputMode = 0;
-    this.outputRoot = 0;
+    this.outputRoot = new Note(0);
 
     this.inputFile = null;
     this.outputFile = null;
@@ -42,7 +43,7 @@ public class transposerModel implements Model{
     input = new File(inputFile);
     output = new File(outputFile);
 
-    TransposeTrack tt = new TransposeTrack(new Note(inputRoot), inputMode, new Note(outputRoot), outputMode);
+    TransposeTrack tt = new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
 
     return tt.transposeToFile(input, output);
   }
@@ -68,12 +69,12 @@ public class transposerModel implements Model{
   }
 
   @Override
-  public void setInputRoot(int inputRoot) {
+  public void setInputRoot(Note inputRoot) {
     this.inputRoot = inputRoot;
   }
 
   @Override
-  public void setOutputRoot(int outputRoot) {
+  public void setOutputRoot(Note outputRoot) {
     this.outputRoot = outputRoot;
   }
 }

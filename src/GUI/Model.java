@@ -1,5 +1,7 @@
 package GUI;
 
+import Transposition.Note;
+
 public interface Model {
 
   /* Runs the transposer creating a new Transposition.Transposer track for the input and output file and key set up */
@@ -18,8 +20,8 @@ public interface Model {
   void setOutputMode(int outputMode);
 
   /* Sets the input root note to the given value */
-  void setInputRoot(int inputRoot);
+  void setInputRoot(Note inputRoot);
 
   /* Sets the output root note to the given value */
-  void setOutputRoot(int outputRoot);
+  void setOutputRoot(Note outputRoot);
 }
