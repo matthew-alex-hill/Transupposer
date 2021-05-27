@@ -1,3 +1,5 @@
+package Transposition;
+
 import java.io.File;
 import java.io.IOException;
 import javax.sound.midi.InvalidMidiDataException;
@@ -9,7 +11,7 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
 
-/* Contains information about input and output key and a Transposer object to intereact with
+/* Contains information about input and output key and a Transposition.Transposer object to intereact with
 *  Public methods let user transpose all notes in a midi sequence to file or to audio or print the transposer map */
 public class TransposeTrack {
 
@@ -21,7 +23,7 @@ public class TransposeTrack {
   private int inputMode;
   private int outputMode;
 
-  /* Root notes of the keys as a Note object for printing purposes */
+  /* Root notes of the keys as a Transposition.Note object for printing purposes */
   private Note inputRoot;
   private Note outputRoot;
 
@@ -201,7 +203,7 @@ public class TransposeTrack {
                 tmpEvent.getTick()));
           } catch (InvalidMidiDataException e) {
             e.printStackTrace();
-            System.out.println("Invalid Note: " + tmpMessage.getStatus() + ", " +
+            System.out.println("Invalid Transposition.Note: " + tmpMessage.getStatus() + ", " +
                 transposer.transpose(shortMessage.getData1()) + ", " +
                 shortMessage.getData2());
             return -1;

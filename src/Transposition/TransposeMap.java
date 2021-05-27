@@ -1,4 +1,6 @@
-/* Interface for a map which can be used by a TransposeTrack */
+package Transposition;
+
+/* Interface for a map which can be used by a Transposition.TransposeTrack */
 public interface TransposeMap {
 
   /* Puts a pair of two notes into the intervals map */
@@ -13,11 +15,11 @@ public interface TransposeMap {
   /* Puts a pair of two notes into the octave changes map if the key is not present*/
   void addOctaveChangeIfAbsent(Note src, int dst);
 
-  /* Creates a new Pitch from a Midi Frequency
+  /* Creates a new Transposition.Pitch from a Midi Frequency
    *  Octaves range from 0 to 10 instead of -1 to 9 so are offset by 1 */
   Pitch pitchFromFrequency(int frequency);
 
-  /* Gets the Midi frequency of a given Pitch */
+  /* Gets the Midi frequency of a given Transposition.Pitch */
   int frequencyFromPitch(Pitch pitch);
 
   /* Gets the transposed frequency of a Midi Frequency

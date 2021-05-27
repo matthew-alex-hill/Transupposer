@@ -1,6 +1,8 @@
+package Transposition;
+
 import java.util.HashMap;
 
-/* Implementation of TransposeMap which uses a Hashmap for transposed notes and octaves */
+/* Implementation of Transposition.TransposeMap which uses a Hashmap for transposed notes and octaves */
 public class Transposer implements TransposeMap {
   private HashMap<Note, Note> intervals;
   private HashMap<Note, Integer> octaveChanges;
@@ -34,14 +36,14 @@ public class Transposer implements TransposeMap {
     octaveChanges.putIfAbsent(src, dst);
   }
 
-  /* Creates a new Pitch from a Midi Frequency
+  /* Creates a new Transposition.Pitch from a Midi Frequency
   *  Octaves range from 0 to 10 instead of -1 to 9 so are offset by 1 */
   @Override
   public Pitch pitchFromFrequency(int frequency) {
     return new Pitch(frequency / 12, new Note(frequency));
   }
 
-  /* Gets the Midi frequency of a given Pitch */
+  /* Gets the Midi frequency of a given Transposition.Pitch */
   @Override
   public int frequencyFromPitch(Pitch pitch) {
     return pitch.getOctave() * 12 + pitch.getNote().getNoteNumber();

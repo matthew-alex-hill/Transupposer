@@ -1,3 +1,5 @@
+import Transposition.Note;
+import Transposition.TransposeTrack;
 import java.io.File;
 import java.util.Scanner;
 
@@ -96,13 +98,13 @@ public class CommandLineInterface {
 
   }
 
-  /* Checks if a Note object is valid or not */
+  /* Checks if a Transposition.Note object is valid or not */
   private static boolean checkNote(Note note) {
     return note != null;
   }
 
-  /* Creates a Note object from a note name
-  *  Note names begin with a valid note letter eg C or c
+  /* Creates a Transposition.Note object from a note name
+  *  Transposition.Note names begin with a valid note letter eg C or c
   *  Then any number of 'b' or '#' characters can be added
   *  Returns null if an invalid string is provided */
   private static Note getNoteFromName(String input) {

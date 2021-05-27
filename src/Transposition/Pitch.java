@@ -1,3 +1,5 @@
+package Transposition;
+
 /* Class representing a midi pitch, consisting of an octave and a note */
 public class Pitch {
 
