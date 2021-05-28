@@ -78,8 +78,8 @@ public class transposerView implements Updatable{
     modes.put(5, new JTextArea("Ionian\n(Major)"));
     modes.put(6, new JTextArea("Lydian"));
 
-    setUpSlider(modes, inputModeSlider);
-    setUpSlider(modes, outputModeSlider);
+    setUpSlider(modes, inputModeSlider, model, true);
+    setUpSlider(modes, outputModeSlider, model, false);
     guiPanel.add(inputModeSlider);
     guiPanel.add(outputModeSlider);
 
@@ -89,11 +89,13 @@ public class transposerView implements Updatable{
 
   }
 
-  private void setUpSlider(Dictionary<Integer, JComponent> modes, JSlider slider) {
+  private void setUpSlider(Dictionary<Integer, JComponent> modes, JSlider slider,
+      Model model, boolean isInput) {
     slider.setMajorTickSpacing(1);
     slider.setSnapToTicks(true);
     slider.setLabelTable(modes);
     slider.setPaintLabels(true);
+    slider.addChangeListener(new SliderController(model, slider, isInput));
   }
 
 

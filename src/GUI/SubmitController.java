@@ -3,6 +3,7 @@ package GUI;
 import Transposition.Note;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
 
 public class SubmitController extends Controller {
 
@@ -30,5 +31,10 @@ public class SubmitController extends Controller {
       //TODO: use actual error field when you make it
       textField.setText("ERROR");
     }
+  }
+
+  @Override
+  public void stateChanged(ChangeEvent changeEvent) {
+    //Unused, does nothing as a change listener
   }
 }

@@ -2,8 +2,9 @@ package GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.event.ChangeListener;
 
-public abstract class Controller implements ActionListener {
+public abstract class Controller implements ActionListener, ChangeListener {
 
   protected Model transposerModel;
 

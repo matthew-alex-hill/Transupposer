@@ -2,6 +2,7 @@ package GUI;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JFileChooser;
+import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class FileOpenController extends Controller {
@@ -27,5 +28,10 @@ public class FileOpenController extends Controller {
   @Override
   public void actionPerformed(ActionEvent actionEvent) {
     fileChooser.showOpenDialog(null);
+  }
+
+  @Override
+  public void stateChanged(ChangeEvent changeEvent) {
+    //Unused, does nothing as a change listener
   }
 }
