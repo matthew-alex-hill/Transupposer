@@ -51,11 +51,13 @@ public class transposerModel implements Model{
   @Override
   public void setInputFile(String path) {
     inputFile = path;
+    updateObservers();
   }
 
   @Override
   public void setOutputFile(String path) {
     outputFile = path;
+    updateObservers();
   }
 
   @Override
@@ -76,5 +78,35 @@ public class transposerModel implements Model{
   @Override
   public void setOutputRoot(Note outputRoot) {
     this.outputRoot = outputRoot;
+  }
+
+  @Override
+  public int getInputMode() {
+    return inputMode;
+  }
+
+  @Override
+  public int getOutputMode() {
+    return outputMode;
+  }
+
+  @Override
+  public Note getInputRoot() {
+    return inputRoot;
+  }
+
+  @Override
+  public Note getOutputRoot() {
+    return outputRoot;
+  }
+
+  @Override
+  public String getInputFile() {
+    return inputFile;
+  }
+
+  @Override
+  public String getOutputFile() {
+    return outputFile;
   }
 }

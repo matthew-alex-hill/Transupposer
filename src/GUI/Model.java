@@ -22,6 +22,18 @@ public interface Model {
   /* Sets the input root note to the given value */
   void setInputRoot(Note inputRoot);
 
+  int getInputMode();
+
+  int getOutputMode();
+
+  Note getInputRoot();
+
+  Note getOutputRoot();
+
+  String getInputFile();
+
+  String getOutputFile();
+
   /* Sets the output root note to the given value */
   void setOutputRoot(Note outputRoot);
 }
