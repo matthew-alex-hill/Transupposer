@@ -60,6 +60,7 @@ public class FileWindowListener implements WindowListener, ActionListener {
     setRelevantFile();
   }
 
+  /* Sets either the input file or output file to the selected path */
   private void setRelevantFile() {
     File file = controller.getFileChooser().getSelectedFile();
     if (file != null) {
@@ -67,7 +68,7 @@ public class FileWindowListener implements WindowListener, ActionListener {
       if (isInput) {
         model.setInputFile(path);
       } else {
-        model.setOutputFile(path);
+        model.setOutputFile(path + '/' + controller.getOutputFileName() + ".mid");
       }
     }
   }
