@@ -24,6 +24,12 @@ public class Transposer implements TransposeMap {
     intervals.putIfAbsent(src, dst);
   }
 
+  /* Returns whether the transpose map contains the note src as a key */
+  @Override
+  public boolean containsInterval(Note src) {
+    return intervals.containsKey(src);
+  }
+
   /* Puts a pair of two notes into the octave changes map */
   @Override
   public void addOctaveChange(Note src, int dst) {

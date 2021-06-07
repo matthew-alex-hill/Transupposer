@@ -30,18 +30,20 @@ public class TransposerTrackTest {
   public void cMajorToCMajor() {
 
     context.checking(new Expectations() {{
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(D, D);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(E, E);
+      exactly(1).of(transposer).addInterval(F, F);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(G, G);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(A, A);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+      exactly(1).of(transposer).addInterval(B, B);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, C,0, transposer);
@@ -57,18 +59,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(G, G);
       exactly(1).of(transposer).addInterval(A, A);
       exactly(1).of(transposer).addInterval(B, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, C,1, transposer);
@@ -84,18 +82,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(A, GSharp);
       exactly(1).of(transposer).addInterval(B, ASharp);
       exactly(1).of(transposer).addInterval(D, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, C,2, transposer);
@@ -111,18 +105,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(B, B);
       exactly(1).of(transposer).addInterval(D, D);
       exactly(1).of(transposer).addInterval(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, C,3, transposer);
@@ -138,18 +128,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(D, D);
       exactly(1).of(transposer).addInterval(E, E);
       exactly(1).of(transposer).addInterval(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, C,4, transposer);
@@ -165,18 +151,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(E, DSharp);
       exactly(1).of(transposer).addInterval(F, F);
       exactly(1).of(transposer).addInterval(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, C,5, transposer);
@@ -192,18 +174,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(F, F);
       exactly(1).of(transposer).addInterval(G, FSharp);
       exactly(1).of(transposer).addInterval(A, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, C,6, transposer);
@@ -219,18 +197,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(G, G);
       exactly(1).of(transposer).addInterval(A, A);
       exactly(1).of(transposer).addInterval(B, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(F, F);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 3, C,4, transposer);
@@ -246,18 +220,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(G, G);
       exactly(1).of(transposer).addInterval(GSharp, GSharp);
       exactly(1).of(transposer).addInterval(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(D, D);
+      exactly(1).of(transposer).addInterval(E, E);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(A, A);
+      exactly(1).of(transposer).addInterval(B, B);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 2, C,5, transposer);
@@ -273,18 +243,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(G, G);
       exactly(1).of(transposer).addInterval(A, GSharp);
       exactly(1).of(transposer).addInterval(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(E, E);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(B, B);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 1, C,5, transposer);
@@ -300,18 +266,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(G, FSharp);
       exactly(1).of(transposer).addInterval(A, GSharp);
       exactly(1).of(transposer).addInterval(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(B, B);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 4, C,6, transposer);
@@ -327,18 +289,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(G, G);
       exactly(1).of(transposer).addInterval(A, A);
       exactly(1).of(transposer).addInterval(B, B);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(CSharp, CSharp);
+      exactly(1).of(transposer).addInterval(DSharp, DSharp);
+      exactly(1).of(transposer).addInterval(F, F);
+      exactly(1).of(transposer).addInterval(GSharp, GSharp);
+      exactly(1).of(transposer).addInterval(ASharp, ASharp);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 3, C,0, transposer);
@@ -354,18 +312,14 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(G, G);
       exactly(1).of(transposer).addInterval(GSharp, A);
       exactly(1).of(transposer).addInterval(ASharp, B);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, B);
+      exactly(1).of(transposer).addInterval(C, C);
+      exactly(1).of(transposer).addInterval(D, D);
+      exactly(1).of(transposer).addInterval(E, E);
+      exactly(1).of(transposer).addInterval(FSharp, FSharp);
+      exactly(1).of(transposer).addInterval(A, A);
+      exactly(1).of(transposer).addInterval(B, B);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 2, C,0, transposer);
@@ -375,24 +329,25 @@ public class TransposerTrackTest {
   public void cMajorToEMajor() {
 
     context.checking(new Expectations() {{
-      exactly(1).of(transposer).addIntervalIfAbsent(C, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, B);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, DSharp);
+      exactly(1).of(transposer).addInterval(C, E);
+      exactly(1).of(transposer).addInterval(CSharp, F);
+      exactly(1).of(transposer).addInterval(D, FSharp);
+      exactly(1).of(transposer).addInterval(DSharp, G);
+      exactly(1).of(transposer).addInterval(E, GSharp);
+      exactly(1).of(transposer).addInterval(F, A);
+      exactly(1).of(transposer).addInterval(FSharp, ASharp);
+      exactly(1).of(transposer).addInterval(G, B);
+      exactly(1).of(transposer).addInterval(GSharp, C);
+      exactly(1).of(transposer).addInterval(A, CSharp);
+      exactly(1).of(transposer).addInterval(ASharp, D);
+      exactly(1).of(transposer).addInterval(B, DSharp);
 
       exactly(1).of(transposer).addOctaveChangeIfAbsent(GSharp, 1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(A, 1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(ASharp, 1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(B, 1);
 
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, E,0, transposer);
@@ -402,18 +357,18 @@ public class TransposerTrackTest {
   public void cMajorToGMajor() {
 
     context.checking(new Expectations() {{
-      exactly(1).of(transposer).addIntervalIfAbsent(C, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, B);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, FSharp);
+      exactly(1).of(transposer).addInterval(C, G);
+      exactly(1).of(transposer).addInterval(CSharp, GSharp);
+      exactly(1).of(transposer).addInterval(D, A);
+      exactly(1).of(transposer).addInterval(DSharp, ASharp);
+      exactly(1).of(transposer).addInterval(E, B);
+      exactly(1).of(transposer).addInterval(F, C);
+      exactly(1).of(transposer).addInterval(FSharp, CSharp);
+      exactly(1).of(transposer).addInterval(G, D);
+      exactly(1).of(transposer).addInterval(GSharp, DSharp);
+      exactly(1).of(transposer).addInterval(A, E);
+      exactly(1).of(transposer).addInterval(ASharp, F);
+      exactly(1).of(transposer).addInterval(B, FSharp);
 
       exactly(1).of(transposer).addOctaveChangeIfAbsent(F, 1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(FSharp, 1);
@@ -422,6 +377,8 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addOctaveChangeIfAbsent(A, 1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(ASharp, 1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(B, 1);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(C, 0, G,0, transposer);
@@ -431,23 +388,25 @@ public class TransposerTrackTest {
   public void AMajorToFMajor() {
 
     context.checking(new Expectations() {{
-      exactly(1).of(transposer).addIntervalIfAbsent(C, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, B);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, G);
+      exactly(1).of(transposer).addInterval(C, GSharp);
+      exactly(1).of(transposer).addInterval(CSharp, A);
+      exactly(1).of(transposer).addInterval(D, ASharp);
+      exactly(1).of(transposer).addInterval(DSharp, B);
+      exactly(1).of(transposer).addInterval(E, C);
+      exactly(1).of(transposer).addInterval(F, CSharp);
+      exactly(1).of(transposer).addInterval(FSharp, D);
+      exactly(1).of(transposer).addInterval(G, DSharp);
+      exactly(1).of(transposer).addInterval(GSharp, E);
+      exactly(1).of(transposer).addInterval(A, F);
+      exactly(1).of(transposer).addInterval(ASharp, FSharp);
+      exactly(1).of(transposer).addInterval(B, G);
 
       exactly(1).of(transposer).addOctaveChangeIfAbsent(C, -1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(CSharp, -1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(D, -1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(DSharp, -1);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(A, 0, F,0, transposer);
@@ -464,23 +423,20 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(D, ASharp);
       exactly(1).of(transposer).addInterval(E, B);
       exactly(1).of(transposer).addInterval(FSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, B);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, G);
+      exactly(1).of(transposer).addInterval(CSharp, A);
+      exactly(1).of(transposer).addInterval(DSharp, B);
+      exactly(1).of(transposer).addInterval(F, CSharp);
+      exactly(1).of(transposer).addInterval(G, DSharp);
+      exactly(1).of(transposer).addInterval(GSharp, E);
+      exactly(1).of(transposer).addInterval(ASharp, FSharp);
 
-      exactly(2).of(transposer).addOctaveChangeIfAbsent(C, -1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(C, -1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(CSharp, -1);
-      exactly(2).of(transposer).addOctaveChangeIfAbsent(D, -1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(D, -1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(DSharp, -1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(E, -1);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(G, 0, DSharp,5, transposer);
@@ -496,22 +452,18 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(C, DSharp);
       exactly(1).of(transposer).addInterval(D, F);
       exactly(1).of(transposer).addInterval(DSharp, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, E);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, B);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, D);
+      exactly(1).of(transposer).addInterval(CSharp, E);
+      exactly(1).of(transposer).addInterval(E, G);
+      exactly(1).of(transposer).addInterval(F, GSharp);
+      exactly(1).of(transposer).addInterval(FSharp, A);
+      exactly(1).of(transposer).addInterval(GSharp, B);
+      exactly(1).of(transposer).addInterval(B, D);
 
-      exactly(2).of(transposer).addOctaveChangeIfAbsent(A, 1);
-      exactly(2).of(transposer).addOctaveChangeIfAbsent(ASharp, 1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(A, 1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(ASharp, 1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(B, 1);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(F, 4, GSharp,0, transposer);
@@ -527,27 +479,23 @@ public class TransposerTrackTest {
       exactly(1).of(transposer).addInterval(F, A);
       exactly(1).of(transposer).addInterval(G, B);
       exactly(1).of(transposer).addInterval(GSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(C, F);
-      exactly(1).of(transposer).addIntervalIfAbsent(CSharp, FSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(D, G);
-      exactly(1).of(transposer).addIntervalIfAbsent(DSharp, GSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(E, A);
-      exactly(1).of(transposer).addIntervalIfAbsent(F, ASharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(FSharp, B);
-      exactly(1).of(transposer).addIntervalIfAbsent(G, C);
-      exactly(1).of(transposer).addIntervalIfAbsent(GSharp, CSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(A, D);
-      exactly(1).of(transposer).addIntervalIfAbsent(ASharp, DSharp);
-      exactly(1).of(transposer).addIntervalIfAbsent(B, E);
+      exactly(1).of(transposer).addInterval(D, G);
+      exactly(1).of(transposer).addInterval(E, A);
+      exactly(1).of(transposer).addInterval(FSharp, B);
+      exactly(1).of(transposer).addInterval(A, D);
+      exactly(1).of(transposer).addInterval(ASharp, DSharp);
+      exactly(1).of(transposer).addInterval(B, E);
 
-      exactly(2).of(transposer).addOctaveChangeIfAbsent(C,-1);
-      exactly(2).of(transposer).addOctaveChangeIfAbsent(CSharp,-1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(C,-1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(CSharp,-1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(D,-1);
-      exactly(2).of(transposer).addOctaveChangeIfAbsent(DSharp,-1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(DSharp,-1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(E,-1);
-      exactly(2).of(transposer).addOctaveChangeIfAbsent(F,-1);
+      exactly(1).of(transposer).addOctaveChangeIfAbsent(F,-1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(FSharp,-1);
       exactly(1).of(transposer).addOctaveChangeIfAbsent(G,-1);
+
+      allowing(transposer).containsInterval(with(aNonNull(Note.class)));
     }});
 
     TransposeTrack tt = new TransposeTrack(ASharp, 1, DSharp,6, transposer);

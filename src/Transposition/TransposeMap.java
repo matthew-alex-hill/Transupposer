@@ -9,6 +9,9 @@ public interface TransposeMap {
   /* Puts a pair of two notes into the intervals map if the key is not present*/
   void addIntervalIfAbsent(Note src, Note dst);
 
+  /* Returns whether the transpose map contains the note src as a key */
+  boolean containsInterval(Note src);
+
   /* Puts a pair of two notes into the octave changes map */
   void addOctaveChange(Note src, int dst);
 

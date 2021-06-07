@@ -89,9 +89,10 @@ public class TransposeTrack {
 
     /* Map chromatic notes and note 1 to same note with new root */
     for (int i = 0; i < 12; i++) {
-      transposer.addIntervalIfAbsent(new Note(i), new Note(i + interval));
-
-      addOctaveIfNeeded(i + interval, i, interval);
+      if (transposer.containsInterval(new Note(i))) {
+        transposer.addInterval(new Note(i), new Note(i + interval));
+        addOctaveIfNeeded(i + interval, i, interval);
+      }
     }
   }
 
