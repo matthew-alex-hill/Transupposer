@@ -2,6 +2,8 @@ package Transposition;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
@@ -16,7 +18,10 @@ import javax.sound.midi.Track;
 public class TransposeTrack {
 
 
-  private static int messageMask = 240;
+  private static final int messageMask = 240;
+  private static final int drumChannel = 9;
+  private static final int percussiveMin = 113;
+
   private TransposeMap transposer;
 
   /* One of the Greek modes, a value from 0 to 6 */
@@ -89,7 +94,7 @@ public class TransposeTrack {
 
     /* Map chromatic notes and note 1 to same note with new root */
     for (int i = 0; i < 12; i++) {
-      if (transposer.containsInterval(new Note(i))) {
+      if (!transposer.containsInterval(new Note(i))) {
         transposer.addInterval(new Note(i), new Note(i + interval));
         addOctaveIfNeeded(i + interval, i, interval);
       }
@@ -182,6 +187,8 @@ public class TransposeTrack {
     ShortMessage shortMessage;
     int messageType;
 
+    Set<Integer> drumChannels = new HashSet<>();
+
     //for each event in each track add either the event or a new event with transposed frequency
     for (Track track : tracks) {
       tmpTrack = outputSequence.createTrack();
@@ -196,20 +203,38 @@ public class TransposeTrack {
 
           shortMessage = (ShortMessage) tmpMessage;
 
-          try {
-            tmpTrack.add(new MidiEvent(
-                new ShortMessage(tmpMessage.getStatus(),
-                    transposer.transpose(shortMessage.getData1()),
-                    shortMessage.getData2()),
-                tmpEvent.getTick()));
-          } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
-            System.out.println("Invalid Transposition.Note: " + tmpMessage.getStatus() + ", " +
-                transposer.transpose(shortMessage.getData1()) + ", " +
-                shortMessage.getData2());
-            return -1;
+          // if channel is a drum channel add frequency as is, else transpose and add
+          if (drumChannels.contains(shortMessage.getChannel())) {
+            tmpTrack.add(tmpEvent);
+          } else {
+            //adds the transposed version of the note as a new event and fails if this cannot be created
+            try {
+              tmpTrack.add(new MidiEvent(
+                  new ShortMessage(tmpMessage.getStatus(),
+                      transposer.transpose(shortMessage.getData1()),
+                      shortMessage.getData2()),
+                  tmpEvent.getTick()));
+            } catch (InvalidMidiDataException e) {
+              e.printStackTrace();
+              System.out.println("Invalid Transposition.Note: " + tmpMessage.getStatus() + ", " +
+                  transposer.transpose(shortMessage.getData1()) + ", " +
+                  shortMessage.getData2());
+              return -1;
+            }
           }
+
         } else {
+          //if we are changing to a drum program, put the channel in the do not transpose list
+          if (messageType == ShortMessage.PROGRAM_CHANGE){
+            shortMessage = (ShortMessage) tmpMessage;
+            if (shortMessage.getData1() >= percussiveMin || shortMessage.getChannel() == drumChannel) {
+              drumChannels.add(shortMessage.getChannel());
+            } else {
+              //remove from the do not transpose list if we are changing to a melodic program
+              drumChannels.remove(shortMessage.getChannel());
+            }
+          }
+
           tmpTrack.add(tmpEvent);
         }
       }
