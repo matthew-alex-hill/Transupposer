@@ -1,8 +1,9 @@
 package GUI;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -11,12 +12,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class transposerView implements Updatable{
+
+  private static int NUM_ROWS = 12;
+  private static int NUM_COLUMNS = 8;
 
   private JSlider inputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
   private JSlider outputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
@@ -35,9 +39,9 @@ public class transposerView implements Updatable{
 
   private JLabel inputRootLabel = new JLabel("Input Root");
   private JLabel outputRootLabel = new JLabel("Output Root");
-  private String inputFileLabel ="Input File";
-  private String outputFileNameLabel ="Output File Name";
-  private String outputFileDirLabel ="Output File Directory";
+  private JLabel inputFileLabel = new JLabel("Input File");
+  private JLabel outputFileNameLabel = new JLabel("Output File Name");
+  private JLabel outputFileDirLabel = new JLabel("Output File Directory");
   private JLabel inputModeLabel = new JLabel("Input Mode");
   private JLabel outputModeLabel = new JLabel("Output Mode");
 
@@ -45,22 +49,10 @@ public class transposerView implements Updatable{
 
   public transposerView(Model model) {
     JFrame frame = new JFrame(transposerGUI.VERSION_NAME);
-    frame.setSize(900, 600);
-
-    JPanel rootsPanel = new JPanel();
-    rootsPanel.add(inputRootLabel);
-    rootsPanel.add(inputRootField);
-    rootsPanel.add(inputRootButton);
-    rootsPanel.add(outputRootLabel);
-    rootsPanel.add(outputRootField);
-    rootsPanel.add(outputRootButton);
-
-    inputRootButton.addActionListener(new SubmitController(model, true, inputRootField));
-    outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
+    frame.setSize(700, 800);
 
     JPanel guiPanel = new JPanel();
-    guiPanel.setLayout(new BoxLayout(guiPanel, BoxLayout.PAGE_AXIS));
-
+    guiPanel.setLayout(new GridBagLayout());
 
     FileNameExtensionFilter midiFilter = new FileNameExtensionFilter("Standard Midi Files", "mid");
     FileNameExtensionFilter allFilter = new FileNameExtensionFilter("All Files", "please kill me");
@@ -76,36 +68,52 @@ public class transposerView implements Updatable{
     outputFileBrowse.addActionListener(FileOpenController.newOutputFileOpenController(model,
         JFileChooser.DIRECTORIES_ONLY, allFilter, outputFileName));
 
-    FileSelectPanel inputFilePanel = new FileSelectPanel(inputFileLabel, inputFileName, inputFileBrowse);
-    FileSelectPanel outputFileDirPanel = new FileSelectPanel(outputFileDirLabel, outputFileDir, outputFileBrowse);
-    FileSelectPanel outputFileNamePanel = new FileSelectPanel(outputFileNameLabel, outputFileName);
+    inputRootButton.addActionListener(new SubmitController(model, true, inputRootField));
+    outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
 
-    guiPanel.add(inputFilePanel.getPanel());
-    guiPanel.add(outputFileNamePanel.getPanel());
-    guiPanel.add(outputFileDirPanel.getPanel());
-    guiPanel.add(rootsPanel);
+    placeInGridAnchor(inputFileLabel, guiPanel,0,0,1,1, GridBagConstraints.LINE_START);
+    placeInGridFill(inputFileName, guiPanel,1,0,6,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(inputFileBrowse, guiPanel,7,0,1,1, GridBagConstraints.LINE_END);
+
+    placeInGridAnchor(outputFileNameLabel, guiPanel,0,1,1,1, GridBagConstraints.LINE_START);
+    placeInGridFill(outputFileName, guiPanel,1,1,6,1, GridBagConstraints.HORIZONTAL);
+
+    placeInGridAnchor(outputFileDirLabel, guiPanel,0,2,1,1, GridBagConstraints.LINE_START);
+    placeInGridFill(outputFileDir, guiPanel,1,2,6,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(outputFileBrowse, guiPanel,7,2,1,1, GridBagConstraints.LINE_END);
+
+    placeInGridAnchor(inputRootLabel, guiPanel, 0,3,1,1, GridBagConstraints.LINE_START);
+    placeInGridFill(inputRootField, guiPanel,1,3,2,1, GridBagConstraints.HORIZONTAL);
+    placeInGrid(inputRootButton, guiPanel, 3,3,1,1);
+    placeInGrid(outputRootLabel, guiPanel, 4,3,1,1);
+    placeInGridFill(outputRootField, guiPanel,5,3,2,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(outputRootButton, guiPanel, 7,3,1,1, GridBagConstraints.LINE_END);
 
     Dictionary<Integer, JComponent> modes = new Hashtable<Integer, JComponent>();
-    modes.put(0, new JTextArea("Locrian"));
-    modes.put(1, new JTextArea("Phrygian"));
-    modes.put(2, new JTextArea("Aeolian\n(Minor)"));
-    modes.put(3, new JTextArea("Dorian"));
-    modes.put(4, new JTextArea("Mixolydian"));
-    modes.put(5, new JTextArea("Ionian\n(Major)"));
-    modes.put(6, new JTextArea("Lydian"));
+    modes.put(0, new JLabel("Locrian", SwingConstants.CENTER));
+    modes.put(1, new JLabel("Phrygian", SwingConstants.CENTER));
+    modes.put(2, new JLabel("Aeolian (Minor)", SwingConstants.CENTER));
+    modes.put(3, new JLabel("Dorian", SwingConstants.CENTER));
+    modes.put(4, new JLabel("Mixolydian", SwingConstants.CENTER));
+    modes.put(5, new JLabel("Ionian (Major)", SwingConstants.CENTER));
+    modes.put(6, new JLabel("Lydian", SwingConstants.CENTER));
 
     runButton.addActionListener(new transposeController(model));
 
     setUpSlider(modes, inputModeSlider, model, true);
     setUpSlider(modes, outputModeSlider, model, false);
-    guiPanel.add(inputModeLabel);
-    guiPanel.add(inputModeSlider);
-    guiPanel.add(outputModeLabel);
-    guiPanel.add(outputModeSlider);
-    guiPanel.add(runButton);
+
+    placeInGrid(inputModeLabel, guiPanel, 0, 4, NUM_COLUMNS, 1);
+    placeInGridFill(inputModeSlider, guiPanel, 0, 5, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
+
+    placeInGrid(outputModeLabel, guiPanel, 0, 6, NUM_COLUMNS, 1);
+    placeInGridFill(outputModeSlider, guiPanel, 0, 7, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
+
+    placeInGrid(runButton, guiPanel, 0,8,NUM_COLUMNS,1);
 
     JScrollPane scroller = new JScrollPane(model.getTextField(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    guiPanel.add(scroller);
+
+    placeInGridFill(scroller, guiPanel, 0, 9,NUM_COLUMNS,3, GridBagConstraints.BOTH);
 
     frame.getContentPane().add(guiPanel);
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -120,6 +128,45 @@ public class transposerView implements Updatable{
     slider.setLabelTable(modes);
     slider.setPaintLabels(true);
     slider.addChangeListener(new SliderController(model, slider, isInput));
+  }
+
+  /* Places an item onto grid bag layout panel */
+  private void placeInGrid(JComponent component, JPanel panel,
+      int gridx, int gridy, int width, int height) {
+    GridBagConstraints constraints = new GridBagConstraints();
+
+    gridPlace(component, panel, gridx, gridy, width, height, constraints);
+  }
+
+  /* Places an item onto grid bag layout panel and fills horizontally */
+  private void placeInGridFill(JComponent component, JPanel panel,
+      int gridx, int gridy, int width, int height, int fill) {
+    GridBagConstraints constraints = new GridBagConstraints();
+    constraints.fill = fill;
+
+    gridPlace(component, panel, gridx, gridy, width, height, constraints);
+  }
+
+  /* Places an item onto grid bag layout panel and anchors to the given value */
+  private void placeInGridAnchor(JComponent component, JPanel panel,
+      int gridx, int gridy, int width, int height, int anchor) {
+    GridBagConstraints constraints = new GridBagConstraints();
+    constraints.anchor = anchor;
+
+    gridPlace(component, panel, gridx, gridy, width, height, constraints);
+  }
+
+  //helper for grid placement
+  private void gridPlace(JComponent component, JPanel panel, int gridx, int gridy, int width,
+      int height, GridBagConstraints constraints) {
+    constraints.gridx = gridx;
+    constraints.gridy = gridy;
+    constraints.gridwidth = width;
+    constraints.gridheight = height;
+    constraints.weightx = (double) width / NUM_COLUMNS;
+    constraints.weighty = (double) height / NUM_ROWS;
+
+    panel.add(component, constraints);
   }
 
 
