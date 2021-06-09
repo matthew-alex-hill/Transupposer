@@ -23,20 +23,24 @@ public interface Model {
   /* Sets the input root note to the given value */
   void setInputRoot(Note inputRoot);
 
+  /* Sets the output root note to the given value */
+  void setOutputRoot(Note outputRoot);
+
+  /* Getters for modes */
   int getInputMode();
 
   int getOutputMode();
 
+  /* Getters for roots */
   Note getInputRoot();
 
   Note getOutputRoot();
 
+  /* Getters for file paths */
   String getInputFile();
 
   String getOutputFile();
 
-  /* Sets the output root note to the given value */
-  void setOutputRoot(Note outputRoot);
-
+  /* Gets the status text field for the model */
   JTextArea getTextField();
 }

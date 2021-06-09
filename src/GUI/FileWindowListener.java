@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 
+/* Window listener for file choosers and action listener for file chooser pop up buttons */
 public class FileWindowListener implements WindowListener, ActionListener {
 
 

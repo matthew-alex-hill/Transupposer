@@ -3,6 +3,7 @@ package GUI;
 import java.awt.event.ActionEvent;
 import javax.swing.event.ChangeEvent;
 
+/* Action listener for transpose button */
 public class transposeController extends Controller{
 
   public transposeController(Model model) {

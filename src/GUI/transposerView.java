@@ -48,12 +48,15 @@ public class transposerView implements Updatable{
   private JButton runButton = new JButton("Transpose");
 
   public transposerView(Model model) {
+    //frame that the the main window is in
     JFrame frame = new JFrame(transposerGUI.VERSION_NAME);
     frame.setSize(700, 800);
 
+    //panel for main window
     JPanel guiPanel = new JPanel();
     guiPanel.setLayout(new GridBagLayout());
 
+    //setting up file choosers
     FileNameExtensionFilter midiFilter = new FileNameExtensionFilter("Standard Midi Files", "mid");
     FileNameExtensionFilter allFilter = new FileNameExtensionFilter("All Files", "please kill me");
     inputFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -62,6 +65,7 @@ public class transposerView implements Updatable{
     outputFileChooser.setAcceptAllFileFilterUsed(true);
     outputFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
+    //adding listeners to buttons
     inputFileBrowse.addActionListener(FileOpenController.newInputFileOpenController(model,
         JFileChooser.FILES_AND_DIRECTORIES, midiFilter));
 
@@ -71,6 +75,9 @@ public class transposerView implements Updatable{
     inputRootButton.addActionListener(new SubmitController(model, true, inputRootField));
     outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
 
+    runButton.addActionListener(new transposeController(model));
+
+    //File choosers
     placeInGridAnchor(inputFileLabel, guiPanel,0,0,1,1, GridBagConstraints.LINE_START);
     placeInGridFill(inputFileName, guiPanel,1,0,6,1, GridBagConstraints.HORIZONTAL);
     placeInGridAnchor(inputFileBrowse, guiPanel,7,0,1,1, GridBagConstraints.LINE_END);
@@ -82,6 +89,7 @@ public class transposerView implements Updatable{
     placeInGridFill(outputFileDir, guiPanel,1,2,6,1, GridBagConstraints.HORIZONTAL);
     placeInGridAnchor(outputFileBrowse, guiPanel,7,2,1,1, GridBagConstraints.LINE_END);
 
+    //Root selectors
     placeInGridAnchor(inputRootLabel, guiPanel, 0,3,1,1, GridBagConstraints.LINE_START);
     placeInGridFill(inputRootField, guiPanel,1,3,2,1, GridBagConstraints.HORIZONTAL);
     placeInGrid(inputRootButton, guiPanel, 3,3,1,1);
@@ -89,6 +97,7 @@ public class transposerView implements Updatable{
     placeInGridFill(outputRootField, guiPanel,5,3,2,1, GridBagConstraints.HORIZONTAL);
     placeInGridAnchor(outputRootButton, guiPanel, 7,3,1,1, GridBagConstraints.LINE_END);
 
+    //Labels for modes
     Dictionary<Integer, JComponent> modes = new Hashtable<Integer, JComponent>();
     modes.put(0, new JLabel("Locrian", SwingConstants.CENTER));
     modes.put(1, new JLabel("Phrygian", SwingConstants.CENTER));
@@ -98,8 +107,7 @@ public class transposerView implements Updatable{
     modes.put(5, new JLabel("Ionian (Major)", SwingConstants.CENTER));
     modes.put(6, new JLabel("Lydian", SwingConstants.CENTER));
 
-    runButton.addActionListener(new transposeController(model));
-
+    //creating and placing mode sliders
     setUpSlider(modes, inputModeSlider, model, true);
     setUpSlider(modes, outputModeSlider, model, false);
 
@@ -109,6 +117,7 @@ public class transposerView implements Updatable{
     placeInGrid(outputModeLabel, guiPanel, 0, 6, NUM_COLUMNS, 1);
     placeInGridFill(outputModeSlider, guiPanel, 0, 7, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
 
+    //placing transpose button and error log
     placeInGrid(runButton, guiPanel, 0,8,NUM_COLUMNS,1);
 
     JScrollPane scroller = new JScrollPane(model.getTextField(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -121,6 +130,7 @@ public class transposerView implements Updatable{
 
   }
 
+  /* Sets up a slider with correct snapping, tick spacing and labels and gives them a change listener */
   private void setUpSlider(Dictionary<Integer, JComponent> modes, JSlider slider,
       Model model, boolean isInput) {
     slider.setMajorTickSpacing(1);

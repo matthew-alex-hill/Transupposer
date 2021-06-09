@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 
+/* Change listener for the mode sliders */
 public class SliderController extends Controller {
   private JSlider slider;
   boolean isInput;

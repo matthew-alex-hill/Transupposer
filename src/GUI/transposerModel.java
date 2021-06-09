@@ -63,7 +63,6 @@ public class transposerModel implements Model{
       tt.transposeToFile(input, output);
       statusBox.addStatus("Transposed file created at " + outputFile);
     } catch (TranspositionException e) {
-      //add error message to status field
       statusBox.addStatus(e.getMessage());
     }
   }
@@ -89,6 +88,8 @@ public class transposerModel implements Model{
   public void setOutputMode(int outputMode) {
     this.outputMode = outputMode;
   }
+
+  /* Root setters can update the status box if an invalid root is given */
 
   @Override
   public void setInputRoot(Note inputRoot) {

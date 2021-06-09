@@ -6,6 +6,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/* Action listener for file browse buttons */
 public class FileOpenController extends Controller {
 
   private FileWindowListener listener;
