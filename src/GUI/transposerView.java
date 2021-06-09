@@ -9,6 +9,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -34,9 +35,9 @@ public class transposerView implements Updatable{
 
   private JLabel inputRootLabel = new JLabel("Input Root");
   private JLabel outputRootLabel = new JLabel("Output Root");
-  private JLabel inputFileLabel = new JLabel("Input File");
-  private JLabel outputFileNameLabel = new JLabel("Output File Name");
-  private JLabel outputFileDirLabel = new JLabel("Output File Directory");
+  private String inputFileLabel ="Input File";
+  private String outputFileNameLabel ="Output File Name";
+  private String outputFileDirLabel ="Output File Directory";
   private JLabel inputModeLabel = new JLabel("Input Mode");
   private JLabel outputModeLabel = new JLabel("Output Mode");
 
@@ -44,7 +45,7 @@ public class transposerView implements Updatable{
 
   public transposerView(Model model) {
     JFrame frame = new JFrame(transposerGUI.VERSION_NAME);
-    frame.setSize(800, 600);
+    frame.setSize(900, 600);
 
     JPanel rootsPanel = new JPanel();
     rootsPanel.add(inputRootLabel);
@@ -60,7 +61,6 @@ public class transposerView implements Updatable{
     JPanel guiPanel = new JPanel();
     guiPanel.setLayout(new BoxLayout(guiPanel, BoxLayout.PAGE_AXIS));
 
-    guiPanel.add(rootsPanel);
 
     FileNameExtensionFilter midiFilter = new FileNameExtensionFilter("Standard Midi Files", "mid");
     FileNameExtensionFilter allFilter = new FileNameExtensionFilter("All Files", "please kill me");
@@ -76,16 +76,14 @@ public class transposerView implements Updatable{
     outputFileBrowse.addActionListener(FileOpenController.newOutputFileOpenController(model,
         JFileChooser.DIRECTORIES_ONLY, allFilter, outputFileName));
 
-    JPanel filesPanel = new JPanel();
-    filesPanel.add(inputFileLabel);
-    filesPanel.add(inputFileName);
-    filesPanel.add(inputFileBrowse);
-    filesPanel.add(outputFileNameLabel);
-    filesPanel.add(outputFileName);
-    filesPanel.add(outputFileDirLabel);
-    filesPanel.add(outputFileDir);
-    filesPanel.add(outputFileBrowse);
-    guiPanel.add(filesPanel);
+    FileSelectPanel inputFilePanel = new FileSelectPanel(inputFileLabel, inputFileName, inputFileBrowse);
+    FileSelectPanel outputFileDirPanel = new FileSelectPanel(outputFileDirLabel, outputFileDir, outputFileBrowse);
+    FileSelectPanel outputFileNamePanel = new FileSelectPanel(outputFileNameLabel, outputFileName);
+
+    guiPanel.add(inputFilePanel.getPanel());
+    guiPanel.add(outputFileNamePanel.getPanel());
+    guiPanel.add(outputFileDirPanel.getPanel());
+    guiPanel.add(rootsPanel);
 
     Dictionary<Integer, JComponent> modes = new Hashtable<Integer, JComponent>();
     modes.put(0, new JTextArea("Locrian"));
@@ -105,6 +103,9 @@ public class transposerView implements Updatable{
     guiPanel.add(outputModeLabel);
     guiPanel.add(outputModeSlider);
     guiPanel.add(runButton);
+
+    JScrollPane scroller = new JScrollPane(model.getTextField(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    guiPanel.add(scroller);
 
     frame.getContentPane().add(guiPanel);
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

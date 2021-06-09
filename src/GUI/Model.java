@@ -1,11 +1,12 @@
 package GUI;
 
 import Transposition.Note;
+import javax.swing.JTextArea;
 
 public interface Model {
 
   /* Runs the transposer creating a new Transposition.Transposer track for the input and output file and key set up */
-  int runTransposer();
+  void runTransposer();
 
   /* Sets the input file path to path */
   void setInputFile(String path);
@@ -36,4 +37,6 @@ public interface Model {
 
   /* Sets the output root note to the given value */
   void setOutputRoot(Note outputRoot);
+
+  JTextArea getTextField();
 }

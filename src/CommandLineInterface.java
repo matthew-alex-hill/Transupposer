@@ -1,5 +1,6 @@
 import Transposition.Note;
 import Transposition.TransposeTrack;
+import Transposition.TranspositionException;
 import java.io.File;
 import java.util.Scanner;
 
@@ -49,10 +50,12 @@ public class CommandLineInterface {
 
     TransposeTrack tt = new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
 
-    if (tt.transposeToFile(inputFile, outputFile) == 0) {
+    try {
+      tt.transposeToFile(inputFile, outputFile);
       System.out.println("Transposed file created successfully at " + args[1]);
-    } else {
-      System.out.println("An error occurred");
+    } catch (TranspositionException e) {
+      e.printStackTrace();
+      System.out.println(e.getMessage());
     }
 
   }

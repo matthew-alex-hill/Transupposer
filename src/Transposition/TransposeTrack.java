@@ -115,28 +115,20 @@ public class TransposeTrack {
      Transposes all note on / note off events
      Writes transposed notes into outputFile
      Returns 0 if successful, -1 if an error occured */
-  public int transposeToFile(File inputFile, File outputFile) {
+  public void transposeToFile(File inputFile, File outputFile) throws TranspositionException {
     Sequence outputSequence = transposeFile(inputFile);
 
-    if (outputSequence != null) {
-      try {
-        MidiSystem.write(outputSequence, 1, outputFile);
-      } catch (IOException e) {
-        e.printStackTrace();
-        System.out.println("A Midi Error Occured Writing to this file");
-        return -1;
-      }
-    } else {
-      return -1;
+    try {
+      MidiSystem.write(outputSequence, 1, outputFile);
+    } catch (IOException e) {
+      throw new TranspositionException("Midi Write Error: " + e.getMessage());
     }
-
-    return 0;
   }
 
   /* Takes in a file and generates a transposed sequence from it
   *  Returns the sequence or null if an error occurs
   *  Errors include invalid midi messages in a file, invalid file type or IO exceptions */
-  private Sequence transposeFile(File inputFile) {
+  private Sequence transposeFile(File inputFile) throws TranspositionException {
     try {
       Sequence inputSequence = MidiSystem.getSequence(inputFile);
       Track[] tracks = inputSequence.getTracks();
@@ -145,21 +137,11 @@ public class TransposeTrack {
           inputSequence.getResolution(),
           tracks.length);
 
-      if (transposeAll(tracks, outputSequence) != 0) {
-        System.out.println("A Midi Message with invalid status was found in the input file");
-        return null;
-      }
-
+      transposeAll(tracks, outputSequence);
       return outputSequence;
 
-    } catch (InvalidMidiDataException e) {
-      e.printStackTrace();
-      System.out.println("Error reading midi file");
-      return null;
-
-    } catch (IOException e) {
-      e.printStackTrace();
-      return null;
+    } catch (InvalidMidiDataException | IOException e) {
+      throw new TranspositionException(e.getMessage());
     }
   }
 
@@ -180,7 +162,7 @@ public class TransposeTrack {
 
   /* Transposes all notes in a list of tracks and adds them to a sequence
    *  Returns 0 if successful, -1 if an error occured */
-  private int transposeAll(Track[] tracks, Sequence outputSequence) {
+  private void transposeAll(Track[] tracks, Sequence outputSequence) throws TranspositionException {
     Track tmpTrack;
     MidiEvent tmpEvent;
     MidiMessage tmpMessage;
@@ -216,10 +198,10 @@ public class TransposeTrack {
                   tmpEvent.getTick()));
             } catch (InvalidMidiDataException e) {
               e.printStackTrace();
-              System.out.println("Invalid Transposition.Note: " + tmpMessage.getStatus() + ", " +
+
+              throw new TranspositionException("Invalid Transposition.Note: " + tmpMessage.getStatus() + ", " +
                   transposer.transpose(shortMessage.getData1()) + ", " +
                   shortMessage.getData2());
-              return -1;
             }
           }
 
@@ -239,8 +221,6 @@ public class TransposeTrack {
         }
       }
     }
-
-    return 0;
   }
 
   public void showMap() {

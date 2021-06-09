@@ -26,11 +26,6 @@ public class SubmitController extends Controller {
     } else {
       transposerModel.setOutputRoot(note);
     }
-
-    if (note == null) {
-      //TODO: use actual error field when you make it
-      textField.setText("ERROR");
-    }
   }
 
   @Override

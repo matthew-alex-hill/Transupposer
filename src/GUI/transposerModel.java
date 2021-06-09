@@ -2,15 +2,18 @@ package GUI;
 
 import Transposition.Note;
 import Transposition.TransposeTrack;
+import Transposition.TranspositionException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JTextArea;
 
 public class transposerModel implements Model{
 
   private int inputMode, outputMode;
   private Note inputRoot, outputRoot;
   private String inputFile, outputFile;
+  private StatusBox statusBox;
 
   private final List<Updatable> views;
 
@@ -23,6 +26,7 @@ public class transposerModel implements Model{
 
     this.inputFile = null;
     this.outputFile = null;
+    this.statusBox = new StatusBox();
   }
 
   /* Adds a view to the views list */
@@ -38,14 +42,30 @@ public class transposerModel implements Model{
   }
 
   @Override
-  public int runTransposer() {
+  public void runTransposer() {
     File input, output;
+    if (inputFile == null) {
+      statusBox.addStatus("Input file not selected");
+      return;
+    }
+
+    if (outputFile == null) {
+      statusBox.addStatus("Output file not selected");
+      return;
+    }
+
     input = new File(inputFile);
     output = new File(outputFile);
 
     TransposeTrack tt = new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
 
-    return tt.transposeToFile(input, output);
+    try {
+      tt.transposeToFile(input, output);
+      statusBox.addStatus("Transposed file created at " + outputFile);
+    } catch (TranspositionException e) {
+      //add error message to status field
+      statusBox.addStatus(e.getMessage());
+    }
   }
 
   @Override
@@ -72,12 +92,22 @@ public class transposerModel implements Model{
 
   @Override
   public void setInputRoot(Note inputRoot) {
-    this.inputRoot = inputRoot;
+    if (inputRoot == null) {
+      statusBox.addStatus("Invalid note entered, cannot change input root");
+    } else {
+      this.inputRoot = inputRoot;
+      statusBox.addStatus("Input root updated to " + inputRoot);
+    }
   }
 
   @Override
   public void setOutputRoot(Note outputRoot) {
-    this.outputRoot = outputRoot;
+    if (outputRoot == null) {
+      statusBox.addStatus("Invalid note entered, cannot change output root");
+    } else {
+      this.outputRoot = outputRoot;
+      statusBox.addStatus("Output root updated to " + outputRoot);
+    }
   }
 
   @Override
@@ -108,5 +138,10 @@ public class transposerModel implements Model{
   @Override
   public String getOutputFile() {
     return outputFile;
+  }
+
+  @Override
+  public JTextArea getTextField() {
+    return statusBox.getTextField();
   }
 }
