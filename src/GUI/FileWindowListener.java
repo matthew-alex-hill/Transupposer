@@ -69,7 +69,7 @@ public class FileWindowListener implements WindowListener, ActionListener {
       if (isInput) {
         model.setInputFile(path);
       } else {
-        model.setOutputFile(path + '/' + controller.getOutputFileName() + ".mid");
+        model.setOutputFile(path + ".mid");
       }
     }
   }
