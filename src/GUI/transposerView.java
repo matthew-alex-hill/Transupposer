@@ -2,9 +2,11 @@ package GUI;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.net.URL;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -41,7 +43,7 @@ public class transposerView implements Updatable{
   private JLabel inputRootLabel = new JLabel("Input Root");
   private JLabel outputRootLabel = new JLabel("Output Root");
   private JLabel inputFileLabel = new JLabel("Input File");
-  private JLabel outputFileLabel = new JLabel("Output File Directory");
+  private JLabel outputFileLabel = new JLabel("Output File");
   private JLabel inputModeLabel = new JLabel("Input Mode");
   private JLabel outputModeLabel = new JLabel("Output Mode");
   private JLabel settingsLabel = new JLabel("Settings");
@@ -54,6 +56,12 @@ public class transposerView implements Updatable{
     //frame that the the main window is in
     JFrame frame = new JFrame(transposerGUI.VERSION_NAME);
     frame.setSize(600, 800);
+
+    URL iconURL = getClass().getResource("transupposer icon.png");
+
+    if (iconURL != null) {
+      frame.setIconImage(new ImageIcon(iconURL).getImage());
+    }
 
     //panel for main window
     JPanel guiPanel = new JPanel();
