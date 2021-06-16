@@ -3,18 +3,44 @@ import Transposition.TransposeTrack;
 import Transposition.TranspositionException;
 import java.io.File;
 import java.util.Scanner;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequencer;
 
 
 /* Command line interface to the program, contains only a main method and helpers */
 public class CommandLineInterface {
 
   public static void main(String[] args) {
-    if (args.length < 2) {
+    if (args.length < 1) {
       System.out.println("Please provide an input and output file");
       return;
     }
 
-    File inputFile = new File(args[0]), outputFile = new File(args[1]);
+    File inputFile = new File(args[0]), outputFile = null;
+    Sequencer sequencer = null;
+
+    if (args.length > 1) {
+      outputFile = new File(args[1]);
+    } else {
+      try {
+        sequencer = MidiSystem.getSequencer(true);
+
+        if (sequencer == null) {
+          System.out.println("No Sequencers Found");
+          return;
+        } else {
+          System.out.println(sequencer.getDeviceInfo().getName());
+          System.out.println(sequencer.getDeviceInfo().getDescription());
+          sequencer.open();
+        }
+      } catch (MidiUnavailableException e) {
+        System.out.println("Midi error: " + e.getMessage());
+        return;
+      }
+    }
+
+
     Scanner scanner = new Scanner(System.in);
 
     Note inputRoot, outputRoot;
@@ -51,12 +77,27 @@ public class CommandLineInterface {
     TransposeTrack tt = new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
 
     try {
-      tt.transposeToFile(inputFile, outputFile);
-      System.out.println("Transposed file created successfully at " + args[1]);
+      if (args.length > 1) {
+        tt.transposeToFile(inputFile, outputFile);
+        System.out.println("Transposed file created successfully at " + args[1]);
+      } else {
+        System.out.println("Starting Transposition");
+        tt.transposeAndPlay(inputFile, sequencer);
+      }
+
     } catch (TranspositionException e) {
       e.printStackTrace();
       System.out.println(e.getMessage());
     }
+
+    if (sequencer != null) {
+      System.out.println("Stopping sequencer");
+      sequencer.stop();
+      System.out.println("Closing sequencer");
+      sequencer.close();
+    }
+
+    System.out.println("Exiting Normally");
 
   }
 

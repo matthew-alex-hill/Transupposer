@@ -9,6 +9,7 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
@@ -111,10 +112,10 @@ public class TransposeTrack {
     }
   }
 
-  /* Takes midi sequence from a inputFile
+  /* Takes midi sequence from an inputFile
      Transposes all note on / note off events
      Writes transposed notes into outputFile
-     Returns 0 if successful, -1 if an error occured */
+     Throws a transposition exception in the case of any errors */
   public void transposeToFile(File inputFile, File outputFile) throws TranspositionException {
     Sequence outputSequence = transposeFile(inputFile);
 
@@ -123,6 +124,25 @@ public class TransposeTrack {
     } catch (IOException e) {
       throw new TranspositionException("Midi Write Error: " + e.getMessage());
     }
+  }
+
+  /* Takes midi sequence from an inputFile
+     Transposes all note on / note off events
+     Writes transposed notes into a new sequence
+     Plays the sequence through a given sequencer
+     Throws a transposition exception in the case of any errors */
+  public void transposeAndPlay(File inputFile, Sequencer sequencer) throws TranspositionException {
+    Sequence outputSequence = transposeFile(inputFile);
+
+    try {
+      sequencer.setSequence(outputSequence);
+    } catch (InvalidMidiDataException e) {
+      throw new TranspositionException(e.getMessage());
+    }
+
+    sequencer.setLoopCount(0);
+    sequencer.start();
+    System.out.println("Started Sequencer");
   }
 
   /* Takes in a file and generates a transposed sequence from it
@@ -144,21 +164,6 @@ public class TransposeTrack {
       throw new TranspositionException(e.getMessage());
     }
   }
-
-  //TODO: add playing to sequencer
-  /*
-  public int transposeAndPlay(File inputFile) {
-    Sequence outputSequence = transposeFile(inputFile);
-
-    if (outputSequence != null) {
-
-    } else {
-      return -1;
-    }
-
-    return 0;
-  }
-   */
 
   /* Transposes all notes in a list of tracks and adds them to a sequence
    *  Returns 0 if successful, -1 if an error occured */
