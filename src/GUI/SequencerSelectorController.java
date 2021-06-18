@@ -40,6 +40,7 @@ public class SequencerSelectorController extends Controller {
         device = MidiSystem.getMidiDevice(infos[i]);
 
         if (device.getDeviceInfo().getName().equals(name)) {
+          //TODO: This line does not create a valid sequencer
           sequencer = (Sequencer) device;
         }
       } catch (MidiUnavailableException e) {

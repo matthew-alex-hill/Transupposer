@@ -15,6 +15,12 @@ public interface Model {
   /* Stops the provided sequencer from sending midi messages */
   void stop(Sequencer sequencer);
 
+  /* Steps the sequencer playback by the given number of microseconds */
+  void step(Sequencer sequencer, long microseconds);
+
+  /* Doubles or halves playback speed of sequencer playback */
+  void changeSpeed(Sequencer sequencer, boolean forwards);
+
   /* Sets the input file path to path */
   void setInputFile(String path);
 

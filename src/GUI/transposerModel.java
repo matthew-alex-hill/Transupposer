@@ -118,6 +118,18 @@ public class transposerModel implements Model{
   }
 
   @Override
+  public void step(Sequencer sequencer, long microseconds) {
+    TransposeTrack tt = getTransposeTrack();
+    tt.step(sequencer, microseconds);
+  }
+
+  @Override
+  public void changeSpeed(Sequencer sequencer, boolean forwards) {
+    TransposeTrack tt = getTransposeTrack();
+    tt.changeSpeed(sequencer, forwards);
+  }
+
+  @Override
   public void setInputFile(String path) {
     inputFile = path;
     updateObservers();

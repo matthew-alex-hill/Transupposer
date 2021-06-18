@@ -8,6 +8,7 @@ public class SequencerController extends Controller{
 
   private Sequencer sequencer;
   private final SequencerCommand command;
+  private static long OFFSET = 10000000;
 
 
 
@@ -33,6 +34,18 @@ public class SequencerController extends Controller{
         break;
       case STOP:
         transposerModel.stop(sequencer);
+        break;
+      case FAST_FORWARD:
+        transposerModel.changeSpeed(sequencer, true);
+        break;
+      case REWIND:
+        transposerModel.changeSpeed(sequencer, false);
+        break;
+      case STEP_FORWARD:
+        transposerModel.step(sequencer, OFFSET);
+        break;
+      case STEP_BACKWARD:
+        transposerModel.step(sequencer, -OFFSET);
         break;
     }
   }

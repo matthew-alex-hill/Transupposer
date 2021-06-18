@@ -34,12 +34,16 @@ public class TransposeTrack {
   private Note inputRoot;
   private Note outputRoot;
 
+  private double playbackSpeed;
+
   public TransposeTrack(Note inputRoot, int inputMode,
       Note outputRoot, int outputMode) {
     this.inputRoot = inputRoot;
     this.inputMode = inputMode % 7;
     this.outputRoot = outputRoot;
     this.outputMode = outputMode % 7;
+
+    this.playbackSpeed = 1;
 
     this.transposer = new Transposer();
     setUpTransposer();
@@ -142,8 +146,11 @@ public class TransposeTrack {
     }
 
     try {
-      sequencer.open();
+      if (!sequencer.isOpen()) {
+        sequencer.open();
+      }
       sequencer.setLoopCount(0);
+      sequencer.setTempoFactor(1);
       sequencer.start();
     } catch (MidiUnavailableException e) {
       throw new TranspositionException(e.getMessage());
@@ -159,6 +166,28 @@ public class TransposeTrack {
     } catch (IllegalStateException e) {
       throw new TranspositionException(e.getMessage());
     }
+  }
+
+  /* Steps midi playback by a given offset in microseconds */
+  public void step(Sequencer sequencer, long microseconds) {
+    sequencer.setMicrosecondPosition(sequencer.getMicrosecondPosition() + microseconds);
+    if (sequencer.getMicrosecondPosition() < 0) {
+      sequencer.setMicrosecondPosition(0);
+    }
+  }
+
+  /* Either doubles or halves the playback tempo factor */
+  public void changeSpeed(Sequencer sequencer, boolean forward) {
+
+    double newTempoFac = Math.log(sequencer.getTempoFactor()) / Math.log(2);
+
+    if (forward) {
+      newTempoFac += 1;
+    } else {
+      newTempoFac -= 1;
+    }
+
+    sequencer.setTempoFactor((float) Math.pow(2, newTempoFac));
   }
 
   /* Takes in a file and generates a transposed sequence from it

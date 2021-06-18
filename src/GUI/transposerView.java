@@ -57,9 +57,13 @@ public class transposerView implements Updatable{
   private String darkestLabel = "Dark";
   private String brightestLabel = "Bright";
 
-  private JButton transposeButton = new JButton("Transpose");
-  private JButton playButton = new JButton("Play");
-  private JButton stopButton = new JButton("Stop");
+  private JButton transposeButton = new JButton("Transpose to File");
+  private JButton playButton = new JButton("▶️︎");
+  private JButton stopButton = new JButton("◼︎");
+  private JButton fastForwardButton = new JButton("▶︎▶︎");
+  private JButton rewindButton = new JButton("◀︎◀︎");
+  private JButton stepForwardButton = new JButton("➡️");
+  private JButton stepBackwardButton = new JButton("⬅️");
 
   private JComboBox<String> sequencerSelector = new JComboBox<>();
 
@@ -99,6 +103,7 @@ public class transposerView implements Updatable{
 
     transposeButton.addActionListener(new transposeController(model));
 
+    //setting up midi playback buttons
     Sequencer defaultSequencer = null;
 
     try {
@@ -106,8 +111,13 @@ public class transposerView implements Updatable{
     } catch (MidiUnavailableException e) {
       model.addStatus(e.getMessage() + ", midi playback will likely not work");
     }
-    playButton.addActionListener(new SequencerController(model, defaultSequencer, SequencerCommand.PLAY));
-    stopButton.addActionListener(new SequencerController(model, defaultSequencer, SequencerCommand.STOP));
+
+    addSequencerController(playButton, SequencerCommand.PLAY, model, defaultSequencer);
+    addSequencerController(stopButton, SequencerCommand.STOP, model, defaultSequencer);
+    addSequencerController(fastForwardButton, SequencerCommand.FAST_FORWARD, model, defaultSequencer);
+    addSequencerController(rewindButton, SequencerCommand.REWIND, model, defaultSequencer);
+    addSequencerController(stepForwardButton, SequencerCommand.STEP_FORWARD, model, defaultSequencer);
+    addSequencerController(stepBackwardButton, SequencerCommand.STEP_BACKWARD, model, defaultSequencer);
 
     //Setting up sequencer selector
     List<String> sequencers = new ArrayList<>();
@@ -172,10 +182,19 @@ public class transposerView implements Updatable{
     placeInGridAnchor(new JLabel(darkestLabel), guiPanel, 0,8, 1,1, GridBagConstraints.FIRST_LINE_START);
     placeInGridAnchor(new JLabel(brightestLabel), guiPanel, 7, 8,1,1, GridBagConstraints.FIRST_LINE_END);
 
+    //Midi Playback buttons
+    JPanel playPanel = new JPanel();
+    playPanel.add(stepBackwardButton);
+    playPanel.add(rewindButton);
+    playPanel.add(stopButton);
+    playPanel.add(playButton);
+    playPanel.add(fastForwardButton);
+    playPanel.add(stepForwardButton);
+
+    placeInGrid(playPanel, guiPanel, 0, 9, NUM_COLUMNS,1);
+
     //placing transpose button and error log
-    placeInGrid(playButton, guiPanel, 0, 9, 2,1);
-    placeInGrid(stopButton, guiPanel, 2, 9,2,1);
-    placeInGrid(transposeButton, guiPanel, 4,9,4,1);
+    placeInGrid(transposeButton, guiPanel, 0,10,NUM_COLUMNS,1);
 
     //TODO: Fix bug here where changing sequencer stops playback working
     //placeInGrid(sequencerSelector, guiPanel,0, 10,NUM_COLUMNS, 1);
@@ -199,6 +218,11 @@ public class transposerView implements Updatable{
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.setVisible(true);
 
+  }
+
+  private void addSequencerController(JButton button, SequencerCommand command, Model model,
+      Sequencer defaultSequencer) {
+    button.addActionListener(new SequencerController(model, defaultSequencer, command));
   }
 
   /* Sets up a slider with correct snapping, tick spacing and labels and gives them a change listener */
