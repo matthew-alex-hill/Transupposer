@@ -6,6 +6,7 @@ import Transposition.TranspositionException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sound.midi.Sequencer;
 import javax.swing.JTextArea;
 
 public class transposerModel implements Model{
@@ -41,29 +42,78 @@ public class transposerModel implements Model{
     }
   }
 
+  /* Creates a new transpose track from current fields */
+  private TransposeTrack getTransposeTrack() {
+    return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
+  }
+
+  /* Creates a file given a path and ads an error status if it cannot */
+  private File loadFile(String path, String errorMessage) {
+    File file;
+    if (path == null) {
+      addStatus(errorMessage);
+      return null;
+    }
+
+    file = new File(path);
+
+    if (file == null) {
+      addStatus("Invalid FIle Path: " + path);
+    }
+
+    return file;
+  }
+
   @Override
-  public void runTransposer() {
-    File input, output;
-    if (inputFile == null) {
-      statusBox.addStatus("Input file not selected");
+  public void transposeToFile() {
+    File input = loadFile(inputFile, "Input file not selected");
+    if (input == null) {
       return;
     }
 
-    if (outputFile == null) {
-      statusBox.addStatus("Output file not selected");
+    File output = loadFile(outputFile, "Output file not selected");
+    if (output == null) {
       return;
     }
 
-    input = new File(inputFile);
-    output = new File(outputFile);
-
-    TransposeTrack tt = new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
+    TransposeTrack tt = getTransposeTrack();
 
     try {
       tt.transposeToFile(input, output);
-      statusBox.addStatus("Transposed file created at " + outputFile);
+      addStatus("Transposed file created at " + outputFile);
     } catch (TranspositionException e) {
-      statusBox.addStatus(e.getMessage());
+      addStatus(e.getMessage());
+    }
+  }
+
+  @Override
+  public void transposeAndPlay(Sequencer sequencer) {
+    TransposeTrack tt = getTransposeTrack();
+
+    File input;
+    input = loadFile(inputFile, "Input file not selected");
+
+    if (input == null) {
+      return;
+    }
+
+    try {
+      tt.transposeAndPlay(input, sequencer);
+      addStatus("Playing transposed Midi from " + inputFile);
+    } catch (TranspositionException e) {
+      addStatus(e.getMessage());
+    }
+  }
+
+  @Override
+  public  void stop(Sequencer sequencer) {
+    TransposeTrack tt = getTransposeTrack();
+
+    try {
+      tt.stop(sequencer);
+      addStatus("Stopped sequencer output");
+    } catch (TranspositionException e) {
+      addStatus(e.getMessage());
     }
   }
 
@@ -109,6 +159,11 @@ public class transposerModel implements Model{
       this.outputRoot = outputRoot;
       statusBox.addStatus("Output root updated to " + outputRoot);
     }
+  }
+
+  @Override
+  public void addStatus(String status) {
+    statusBox.addStatus(status);
   }
 
   @Override

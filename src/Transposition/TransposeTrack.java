@@ -8,6 +8,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
@@ -140,9 +141,24 @@ public class TransposeTrack {
       throw new TranspositionException(e.getMessage());
     }
 
-    sequencer.setLoopCount(0);
-    sequencer.start();
-    System.out.println("Started Sequencer");
+    try {
+      sequencer.open();
+      sequencer.setLoopCount(0);
+      sequencer.start();
+    } catch (MidiUnavailableException e) {
+      throw new TranspositionException(e.getMessage());
+    }
+  }
+
+  /* Stops a playing sequence or throws an exception if it cannot access the sequencer*/
+  public void stop(Sequencer sequencer) throws TranspositionException {
+
+    try {
+      sequencer.stop();
+      sequencer.close();
+    } catch (IllegalStateException e) {
+      throw new TranspositionException(e.getMessage());
+    }
   }
 
   /* Takes in a file and generates a transposed sequence from it

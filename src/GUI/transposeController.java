@@ -12,7 +12,7 @@ public class transposeController extends Controller{
 
   @Override
   public void actionPerformed(ActionEvent actionEvent) {
-    transposerModel.runTransposer();
+    transposerModel.transposeToFile();
   }
 
   @Override

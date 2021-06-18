@@ -1,12 +1,19 @@
 package GUI;
 
 import Transposition.Note;
+import javax.sound.midi.Sequencer;
 import javax.swing.JTextArea;
 
 public interface Model {
 
   /* Runs the transposer creating a new Transposition.Transposer track for the input and output file and key set up */
-  void runTransposer();
+  void transposeToFile();
+
+  /* Runs transposer and plays resulting midi to supplied sequencer */
+  void transposeAndPlay(Sequencer sequencer);
+
+  /* Stops the provided sequencer from sending midi messages */
+  void stop(Sequencer sequencer);
 
   /* Sets the input file path to path */
   void setInputFile(String path);
@@ -25,6 +32,8 @@ public interface Model {
 
   /* Sets the output root note to the given value */
   void setOutputRoot(Note outputRoot);
+
+  void addStatus(String status);
 
   /* Getters for modes */
   int getInputMode();

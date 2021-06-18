@@ -32,7 +32,6 @@ public class CommandLineInterface {
         } else {
           System.out.println(sequencer.getDeviceInfo().getName());
           System.out.println(sequencer.getDeviceInfo().getDescription());
-          sequencer.open();
         }
       } catch (MidiUnavailableException e) {
         System.out.println("Midi error: " + e.getMessage());
@@ -89,16 +88,9 @@ public class CommandLineInterface {
       e.printStackTrace();
       System.out.println(e.getMessage());
     }
-
-    if (sequencer != null) {
-      System.out.println("Stopping sequencer");
-      sequencer.stop();
-      System.out.println("Closing sequencer");
-      sequencer.close();
-    }
-
     System.out.println("Exiting Normally");
 
+    //TODO: Program does not exit without interruption
   }
 
   /* Checks if a mode is valid or not (from 0 to 6) */

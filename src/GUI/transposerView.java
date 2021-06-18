@@ -3,11 +3,18 @@ package GUI;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequencer;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -50,7 +57,11 @@ public class transposerView implements Updatable{
   private String darkestLabel = "Dark";
   private String brightestLabel = "Bright";
 
-  private JButton runButton = new JButton("Transpose");
+  private JButton transposeButton = new JButton("Transpose");
+  private JButton playButton = new JButton("Play");
+  private JButton stopButton = new JButton("Stop");
+
+  private JComboBox<String> sequencerSelector = new JComboBox<>();
 
   public transposerView(Model model) {
     //frame that the the main window is in
@@ -86,7 +97,38 @@ public class transposerView implements Updatable{
     inputRootButton.addActionListener(new SubmitController(model, true, inputRootField));
     outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
 
-    runButton.addActionListener(new transposeController(model));
+    transposeButton.addActionListener(new transposeController(model));
+
+    Sequencer defaultSequencer = null;
+
+    try {
+      defaultSequencer = MidiSystem.getSequencer();
+    } catch (MidiUnavailableException e) {
+      model.addStatus(e.getMessage() + ", midi playback will likely not work");
+    }
+    playButton.addActionListener(new SequencerController(model, defaultSequencer, SequencerCommand.PLAY));
+    stopButton.addActionListener(new SequencerController(model, defaultSequencer, SequencerCommand.STOP));
+
+    //Setting up sequencer selector
+    List<String> sequencers = new ArrayList<>();
+    MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
+    MidiDevice device;
+
+    for (int i = 0; i < infos.length; i++) {
+      try {
+        device = MidiSystem.getMidiDevice(infos[i]);
+        if (device instanceof Sequencer) {
+          sequencerSelector.addItem(device.getDeviceInfo().getName());
+        }
+      } catch (MidiUnavailableException e) {
+        model.addStatus(e.getMessage());
+      }
+    }
+
+    SequencerSelectorController ssc = new SequencerSelectorController(model, sequencerSelector);
+    ssc.addUser((SequencerController) playButton.getActionListeners()[0]);
+    ssc.addUser((SequencerController) stopButton.getActionListeners()[0]);
+    sequencerSelector.addActionListener(ssc);
 
     //File choosers
     placeInGridAnchor(inputFileLabel, guiPanel,0,0,1,1, GridBagConstraints.LINE_START);
@@ -131,11 +173,15 @@ public class transposerView implements Updatable{
     placeInGridAnchor(new JLabel(brightestLabel), guiPanel, 7, 8,1,1, GridBagConstraints.FIRST_LINE_END);
 
     //placing transpose button and error log
-    placeInGrid(runButton, guiPanel, 0,9,NUM_COLUMNS,1);
+    placeInGrid(playButton, guiPanel, 0, 9, 2,1);
+    placeInGrid(stopButton, guiPanel, 2, 9,2,1);
+    placeInGrid(transposeButton, guiPanel, 4,9,4,1);
 
+    //TODO: Fix bug here where changing sequencer stops playback working
+    //placeInGrid(sequencerSelector, guiPanel,0, 10,NUM_COLUMNS, 1);
     JScrollPane scroller = new JScrollPane(model.getTextField(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-    placeInGridFill(scroller, guiPanel, 0, 10,NUM_COLUMNS,3, GridBagConstraints.BOTH);
+    placeInGridFill(scroller, guiPanel, 0, 11,NUM_COLUMNS,3, GridBagConstraints.BOTH);
 
     JPanel settingsPanel = new JPanel();
     settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
