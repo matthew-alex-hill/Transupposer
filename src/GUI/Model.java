@@ -6,6 +6,9 @@ import javax.swing.JTextArea;
 
 public interface Model {
 
+  /* Updates all views available to the model */
+  void updateObservers();
+
   /* Runs the transposer creating a new Transposition.Transposer track for the input and output file and key set up */
   void transposeToFile();
 

@@ -36,7 +36,8 @@ public class transposerModel implements Model{
   }
 
   /* Updates all views available to the model */
-  private void updateObservers() {
+  @Override
+  public void updateObservers() {
     for (Updatable u: views) {
       u.update(this);
     }
