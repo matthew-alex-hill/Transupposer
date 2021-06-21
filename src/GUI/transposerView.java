@@ -47,7 +47,7 @@ public class transposerView implements Updatable{
   private JTextField inputFileName = new JTextField(50);
   private JTextField outputFileName = new JTextField(50);
 
-  private JLabel inputRootLabel = new JLabel("Input Root");
+  private JLabel inputRootLabel = new JLabel("Input Root ");
   private JLabel outputRootLabel = new JLabel("Output Root");
   private JLabel inputFileLabel = new JLabel("Input File");
   private JLabel outputFileLabel = new JLabel("Output File");
@@ -67,9 +67,19 @@ public class transposerView implements Updatable{
 
   private JComboBox<String> sequencerSelector = new JComboBox<>();
 
+  private JPanel filePanel = new JPanel();
+  private JPanel rootsPanel = new JPanel();
+  private JPanel inputModePanel = new JPanel();
+  private JPanel outputModePanel = new JPanel();
+  private JPanel playPanel = new JPanel();
+  private JPanel settingsPanel = new JPanel();
+  private final JScrollPane scroller;
+  private final JFrame frame;
+  private JPanel guiPanel = new JPanel();
+
   public transposerView(Model model) {
     //frame that the the main window is in
-    JFrame frame = new JFrame(transposerGUI.VERSION_NAME);
+    frame = new JFrame(transposerGUI.VERSION_NAME);
     frame.setSize(600, 800);
 
     URL iconURL = getClass().getResource("transupposer icon.png");
@@ -78,9 +88,11 @@ public class transposerView implements Updatable{
       frame.setIconImage(new ImageIcon(iconURL).getImage());
     }
 
-    //panel for main window
-    JPanel guiPanel = new JPanel();
-    guiPanel.setLayout(new GridBagLayout());
+    //setting layouts for global panels
+    filePanel.setLayout(new GridBagLayout());
+    rootsPanel.setLayout(new GridBagLayout());
+    inputModePanel.setLayout(new GridBagLayout());
+    outputModePanel.setLayout(new GridBagLayout());
 
     //setting up file choosers
     /*
@@ -141,21 +153,21 @@ public class transposerView implements Updatable{
     sequencerSelector.addActionListener(ssc);
 
     //File choosers
-    placeInGridAnchor(inputFileLabel, guiPanel,0,0,1,1, GridBagConstraints.LINE_START);
-    placeInGridFill(inputFileName, guiPanel,1,0,6,1, GridBagConstraints.HORIZONTAL);
-    placeInGridAnchor(inputFileBrowse, guiPanel,7,0,1,1, GridBagConstraints.LINE_END);
+    placeInGridAnchor(inputFileLabel, filePanel,0,0,1,1, GridBagConstraints.LINE_START);
+    placeInGridFill(inputFileName, filePanel,1,0,6,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(inputFileBrowse, filePanel,7,0,1,1, GridBagConstraints.LINE_END);
 
-    placeInGridAnchor(outputFileLabel, guiPanel,0,1,1,1, GridBagConstraints.LINE_START);
-    placeInGridFill(outputFileName, guiPanel,1,1,6,1, GridBagConstraints.HORIZONTAL);
-    placeInGridAnchor(outputFileBrowse, guiPanel,7,1,1,1, GridBagConstraints.LINE_END);
+    placeInGridAnchor(outputFileLabel, filePanel,0,1,1,1, GridBagConstraints.LINE_START);
+    placeInGridFill(outputFileName, filePanel,1,1,6,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(outputFileBrowse, filePanel,7,1,1,1, GridBagConstraints.LINE_END);
 
     //Root selectors
-    placeInGridAnchor(inputRootLabel, guiPanel, 0,2,1,1, GridBagConstraints.LINE_START);
-    placeInGridFill(inputRootField, guiPanel,1,2,2,1, GridBagConstraints.HORIZONTAL);
-    placeInGrid(inputRootButton, guiPanel, 3,2,1,1);
-    placeInGrid(outputRootLabel, guiPanel, 4,2,1,1);
-    placeInGridFill(outputRootField, guiPanel,5,2,2,1, GridBagConstraints.HORIZONTAL);
-    placeInGridAnchor(outputRootButton, guiPanel, 7,2,1,1, GridBagConstraints.LINE_END);
+    placeInGridAnchor(inputRootLabel, rootsPanel, 0,0,1,1, GridBagConstraints.LINE_START);
+    placeInGridFill(inputRootField, rootsPanel,1,0,2,1, GridBagConstraints.HORIZONTAL);
+    placeInGrid(inputRootButton, rootsPanel, 3,0,1,1);
+    placeInGrid(outputRootLabel, rootsPanel, 4,0,1,1);
+    placeInGridFill(outputRootField, rootsPanel,5,0,2,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(outputRootButton, rootsPanel, 7,0,1,1, GridBagConstraints.LINE_END);
 
     //Labels for modes
     Dictionary<Integer, JComponent> modes = new Hashtable<Integer, JComponent>();
@@ -171,19 +183,17 @@ public class transposerView implements Updatable{
     setUpSlider(modes, inputModeSlider, model, true);
     setUpSlider(modes, outputModeSlider, model, false);
 
-    placeInGrid(inputModeLabel, guiPanel, 0, 3, NUM_COLUMNS, 1);
-    placeInGridAnchor(new JLabel(darkestLabel), guiPanel, 0,5, 1,1, GridBagConstraints.FIRST_LINE_START);
-    placeInGridAnchor(new JLabel(brightestLabel), guiPanel, 7, 5,1,1, GridBagConstraints.FIRST_LINE_END);
-    placeInGridFill(inputModeSlider, guiPanel, 0, 4, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
+    placeInGrid(inputModeLabel, inputModePanel, 0, 0, NUM_COLUMNS, 1);
+    placeInGridFill(inputModeSlider, inputModePanel, 0, 1, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(new JLabel(darkestLabel), inputModePanel, 0,2, 1,1, GridBagConstraints.FIRST_LINE_START);
+    placeInGridAnchor(new JLabel(brightestLabel), inputModePanel, 7, 2,1,1, GridBagConstraints.FIRST_LINE_END);
 
-    placeInGrid(outputModeLabel, guiPanel, 0, 6, NUM_COLUMNS, 1);
-    placeInGridFill(outputModeSlider, guiPanel, 0, 7, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
-
-    placeInGridAnchor(new JLabel(darkestLabel), guiPanel, 0,8, 1,1, GridBagConstraints.FIRST_LINE_START);
-    placeInGridAnchor(new JLabel(brightestLabel), guiPanel, 7, 8,1,1, GridBagConstraints.FIRST_LINE_END);
+    placeInGrid(outputModeLabel, outputModePanel, 0, 0, NUM_COLUMNS, 1);
+    placeInGridFill(outputModeSlider, outputModePanel, 0, 1, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(new JLabel(darkestLabel), outputModePanel, 0,2, 1,1, GridBagConstraints.FIRST_LINE_START);
+    placeInGridAnchor(new JLabel(brightestLabel), outputModePanel, 7, 2,1,1, GridBagConstraints.FIRST_LINE_END);
 
     //Midi Playback buttons
-    JPanel playPanel = new JPanel();
     playPanel.add(stepBackwardButton);
     playPanel.add(rewindButton);
     playPanel.add(stopButton);
@@ -191,33 +201,20 @@ public class transposerView implements Updatable{
     playPanel.add(fastForwardButton);
     playPanel.add(stepForwardButton);
 
-    placeInGrid(playPanel, guiPanel, 0, 9, NUM_COLUMNS,1);
-
-    //placing transpose button and error log
-    placeInGrid(transposeButton, guiPanel, 0,10,NUM_COLUMNS,1);
-
     //TODO: Fix bug here where changing sequencer stops playback working
     //placeInGrid(sequencerSelector, guiPanel,0, 10,NUM_COLUMNS, 1);
-    JScrollPane scroller = new JScrollPane(model.getTextField(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-    placeInGridFill(scroller, guiPanel, 0, 11,NUM_COLUMNS,3, GridBagConstraints.BOTH);
-
-    JPanel settingsPanel = new JPanel();
+    scroller = new JScrollPane(model.getTextField(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    settingsPanel = new JPanel();
     settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 
     settingsPanel.add(settingsLabel);
 
-    JPanel framePanel = new JPanel();
-    framePanel.setLayout(new GridBagLayout());
+    //gui panel given layout
+    guiPanel.setLayout(new GridBagLayout());
 
-    placeInFrame(guiPanel, framePanel, 0,1,0.8);
-    placeInFrame(new JSeparator(SwingConstants.VERTICAL), framePanel, 1,0, 0);
-    placeInFrame(settingsPanel, framePanel, 1,1, 0.2);
-
-    frame.getContentPane().add(guiPanel);
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    frame.setVisible(true);
-
+    update(model);
   }
 
   private void addSequencerController(JButton button, SequencerCommand command, Model model,
@@ -292,8 +289,30 @@ public class transposerView implements Updatable{
 
   @Override
   public void update(Model model) {
+
     inputFileName.setText(model.getInputFile());
     outputFileName.setText(model.getOutputFile());
 
+    guiPanel.removeAll();
+
+    placeInGridFill(filePanel, guiPanel, 0,0,3,2, GridBagConstraints.BOTH);
+    placeInGridFill(rootsPanel, guiPanel, 0, 2, 3, 1, GridBagConstraints.HORIZONTAL);
+    placeInGridFill(inputModePanel, guiPanel, 0, 3, 3, 3, GridBagConstraints.HORIZONTAL);
+    placeInGridFill(outputModePanel, guiPanel, 0, 6, 3,3, GridBagConstraints.HORIZONTAL);
+    placeInGridFill(playPanel, guiPanel, 0, 9, 3, 1, GridBagConstraints.HORIZONTAL);
+    placeInGrid(transposeButton, guiPanel, 1, 10, 1, 1);
+    placeInGridFill(scroller, guiPanel, 0, 11, 3,1, GridBagConstraints.BOTH);
+
+    JPanel framePanel = new JPanel();
+    framePanel.setLayout(new GridBagLayout());
+
+    placeInFrame(guiPanel, framePanel, 0,1,0.8);
+    placeInFrame(new JSeparator(SwingConstants.VERTICAL), framePanel, 1,0, 0);
+    placeInFrame(settingsPanel, framePanel, 1,1, 0.2);
+
+    framePanel.setVisible(false);
+    frame.getContentPane().removeAll();
+    frame.getContentPane().add(framePanel);
+    framePanel.setVisible(true);
   }
 }
