@@ -1,5 +1,5 @@
 # Transupposer
-A simple program that can transpose MIDI files to and from any of the 7 greek modes.
+A simple program that can transpose MIDI files to and from any of the 7 modern modes.
 
 Download the most recent jar file at https://github.com/matthew-alex-hill/Transupposer/releases to install. 
 Check out the Wiki for advice on how to use.
