@@ -293,27 +293,35 @@ public class transposerView implements Updatable{
   @Override
   public void update(Model model) {
 
+    int gridy = 0;
+
     inputFileName.setText(model.getInputFile());
     outputFileName.setText(model.getOutputFile());
 
     guiPanel.removeAll();
 
     if (filePanel.isVisibile()) {
-      placeInGridFill(filePanel.getPanel(), guiPanel, 0, 0, 3, 2, GridBagConstraints.BOTH);
+      placeInGridFill(filePanel.getPanel(), guiPanel, 0, gridy, 3, 2, GridBagConstraints.BOTH);
+      gridy += 2;
     }
 
     if (rootsPanel.isVisibile()) {
-      placeInGridFill(rootsPanel.getPanel(), guiPanel, 0, 2, 3, 1, GridBagConstraints.HORIZONTAL);
+      placeInGridFill(rootsPanel.getPanel(), guiPanel, 0, gridy, 3, 1, GridBagConstraints.HORIZONTAL);
+      gridy++;
     }
-    placeInGridFill(inputModePanel, guiPanel, 0, 3, 3, 3, GridBagConstraints.HORIZONTAL);
-    placeInGridFill(outputModePanel, guiPanel, 0, 6, 3,3, GridBagConstraints.HORIZONTAL);
+
+    placeInGridFill(inputModePanel, guiPanel, 0, gridy, 3, 3, GridBagConstraints.HORIZONTAL);
+    gridy += 3;
+    placeInGridFill(outputModePanel, guiPanel, 0, gridy, 3,3, GridBagConstraints.HORIZONTAL);
+    gridy += 3;
 
     if (playPanel.isVisibile()) {
-      placeInGridFill(playPanel.getPanel(), guiPanel, 0, 9, 3, 1, GridBagConstraints.HORIZONTAL);
+      placeInGridFill(playPanel.getPanel(), guiPanel, 0, gridy, 3, 1, GridBagConstraints.HORIZONTAL);
+      gridy++;
     }
 
-    placeInGrid(transposeButton, guiPanel, 1, 10, 1, 1);
-    placeInGridFill(scroller, guiPanel, 0, 11, 3,1, GridBagConstraints.BOTH);
+    placeInGrid(transposeButton, guiPanel, 1, gridy++, 1, 1);
+    placeInGridFill(scroller, guiPanel, 0, gridy, 3,1, GridBagConstraints.BOTH);
 
     JPanel framePanel = new JPanel();
     framePanel.setLayout(new GridBagLayout());
