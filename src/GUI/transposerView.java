@@ -321,10 +321,10 @@ public class transposerView implements Updatable{
 
     JPanel adjustPanel = new JPanel();
     int root = model.getInputRoot().getNoteNumber();
-    TransposeMap map = new TransposeTrack(model.getInputRoot(), model.getInputMode(), model.getOutputRoot(), model.getOutputMode()).getTransposer();
+    TransposeTrack tt = new TransposeTrack(model.getInputRoot(), model.getInputMode(), model.getOutputRoot(), model.getOutputMode());
 
     for (int i = root; i < root + 12; i++) {
-      adjustPanel.add(new NoteAdjuster(model, new Note(i), new Note(map.transpose(i))).getPanel());
+      adjustPanel.add(new NoteAdjuster(model, new Note(i), tt.transposeNote(new Note(i))).getPanel());
     }
 
     placeInGridFill(adjustPanel, guiPanel, 0, gridy++, 3, 1, GridBagConstraints.HORIZONTAL);

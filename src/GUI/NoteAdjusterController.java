@@ -13,11 +13,13 @@ public class NoteAdjusterController extends Controller {
   public NoteAdjusterController(Model transposerModel, Note base, JComboBox<Note> box) {
     super(transposerModel);
     this.box = box;
+    this.base = base;
   }
 
   @Override
   public void actionPerformed(ActionEvent actionEvent) {
     Note transposed = (Note) box.getSelectedItem();
+    transposerModel.addCustomInterval(base, transposed);
   }
 
 

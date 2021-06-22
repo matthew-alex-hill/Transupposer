@@ -28,4 +28,7 @@ public interface TransposeMap {
   /* Gets the transposed frequency of a Midi Frequency
    *  Transposing done via the intervals map */
   int transpose(int frequency);
+
+  /* Adds an octave to a note if it wraps round over the circle of fifths back to C*/
+  void addOctaveIfNeeded(int noteValue, int mapKey, int interval);
 }

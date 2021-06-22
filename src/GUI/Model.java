@@ -42,6 +42,10 @@ public interface Model {
   /* Sets the output root note to the given value */
   void setOutputRoot(Note outputRoot);
 
+  /* Adds note interval to customised scale or replaces existing interval with same base note */
+  void addCustomInterval(Note src, Note dst);
+
+  /* Adds a status message to the status box */
   void addStatus(String status);
 
   /* Getters for modes */

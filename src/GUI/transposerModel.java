@@ -2,10 +2,13 @@ package GUI;
 
 import Transposition.Note;
 import Transposition.TransposeTrack;
+import Transposition.Transposer;
 import Transposition.TranspositionException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.sound.midi.Sequencer;
 import javax.swing.JTextArea;
 
@@ -14,6 +17,8 @@ public class transposerModel implements Model{
   private int inputMode, outputMode;
   private Note inputRoot, outputRoot;
   private String inputFile, outputFile;
+  private Map<Note,Note> customIntervals;
+  private boolean useCustomIntervals;
   private StatusBox statusBox;
 
   private final List<Updatable> views;
@@ -24,6 +29,8 @@ public class transposerModel implements Model{
     this.inputRoot = new Note(0);
     this.outputMode = 0;
     this.outputRoot = new Note(0);
+    this.customIntervals = new HashMap<>();
+    this.useCustomIntervals = true;
 
     this.inputFile = null;
     this.outputFile = null;
@@ -45,6 +52,14 @@ public class transposerModel implements Model{
 
   /* Creates a new transpose track from current fields */
   private TransposeTrack getTransposeTrack() {
+    if (useCustomIntervals) {
+      try {
+        return new TransposeTrack(inputRoot, outputRoot, new Transposer(customIntervals));
+      } catch (TranspositionException e) {
+        addStatus(e.getMessage());
+        addStatus("Transposing with selected mode sliders instead");
+      }
+    }
     return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
   }
 
@@ -176,6 +191,12 @@ public class transposerModel implements Model{
       statusBox.addStatus("Output root updated to " + outputRoot);
     }
     updateObservers();
+  }
+
+  @Override
+  public void addCustomInterval(Note src, Note dst) {
+    customIntervals.remove(src);
+    customIntervals.put(src, dst);
   }
 
   @Override

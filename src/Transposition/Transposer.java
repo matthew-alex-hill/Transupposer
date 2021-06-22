@@ -1,15 +1,21 @@
 package Transposition;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /* Implementation of Transposition.TransposeMap which uses a Hashmap for transposed notes and octaves */
 public class Transposer implements TransposeMap {
-  private HashMap<Note, Note> intervals;
+  private Map<Note, Note> intervals;
   private HashMap<Note, Integer> octaveChanges;
 
   public Transposer() {
     intervals = new HashMap<>();
     octaveChanges = new HashMap<>();
+  }
+
+  public Transposer(Map<Note, Note> intervals) {
+    this.intervals = intervals;
+    this.octaveChanges = new HashMap<>();
   }
 
   /* Puts a pair of two notes into the intervals map */
@@ -75,5 +81,16 @@ public class Transposer implements TransposeMap {
   @Override
   public String toString() {
     return intervals.toString();
+  }
+
+  /* Adds an octave to a note if it wraps round over the circle of fifths back to C*/
+  @Override
+  public void addOctaveIfNeeded(int noteValue, int mapKey, int interval) {
+    if (interval > 0 && noteValue % 12 < mapKey % 12) {
+      addOctaveChangeIfAbsent(new Note(mapKey), 1);
+    }
+    if (interval < 0 && noteValue % 12 > mapKey % 12) {
+      addOctaveChangeIfAbsent(new Note(mapKey), -1);
+    }
   }
 }

@@ -36,15 +36,33 @@ public class TransposeTrack {
 
   private double playbackSpeed;
 
+  //Creates new transpose map with roots and modes
   public TransposeTrack(Note inputRoot, int inputMode,
       Note outputRoot, int outputMode) {
     makeTransposeTrack(inputRoot, inputMode, outputRoot, outputMode, new Transposer());
 
   }
 
+  //Loads data into existing transpose map
   public TransposeTrack(Note inputRoot, int inputMode,
       Note outputRoot, int outputMode, TransposeMap transposer) {
     makeTransposeTrack(inputRoot, inputMode, outputRoot, outputMode, transposer);
+  }
+
+  //Uses an existig transpose map to generate only an octaves map
+  public TransposeTrack (Note inputRoot, Note outputRoot, TransposeMap transposer)
+      throws TranspositionException {
+    this.inputRoot = inputRoot;
+    this.outputRoot = outputRoot;
+    this.transposer = transposer;
+
+    for (int i = 0; i < 12; i++) {
+      Note tmp = new Note(i);
+      if (!transposer.containsInterval(tmp)) {
+        throw new TranspositionException("Note " + tmp + " not found in transpose map");
+      }
+      transposer.addOctaveIfNeeded(i, transposeNote(tmp).getNoteNumber(), outputRoot.getNoteNumber() - inputRoot.getNoteNumber());
+    }
   }
 
   private void makeTransposeTrack(Note inputRoot, int inputMode, Note outputRoot, int outputMode,
@@ -93,7 +111,7 @@ public class TransposeTrack {
 
         transposer.addInterval(new Note(workingNote), new Note(workingRoot + transposeGap));
 
-        addOctaveIfNeeded(workingRoot + transposeGap, workingNote, interval);
+        transposer.addOctaveIfNeeded(workingRoot + transposeGap, workingNote, interval);
       }
     }
 
@@ -101,19 +119,14 @@ public class TransposeTrack {
     for (int i = 0; i < 12; i++) {
       if (!transposer.containsInterval(new Note(i))) {
         transposer.addInterval(new Note(i), new Note(i + interval));
-        addOctaveIfNeeded(i + interval, i, interval);
+        transposer.addOctaveIfNeeded(i + interval, i, interval);
       }
     }
   }
 
-  /* Adds an octave to a note if it wraps round over the circle of fifths back to C*/
-  private void addOctaveIfNeeded(int noteValue, int mapKey, int interval) {
-    if (interval > 0 && noteValue % 12 < mapKey % 12) {
-      transposer.addOctaveChangeIfAbsent(new Note(mapKey), 1);
-    }
-    if (interval < 0 && noteValue % 12 > mapKey % 12) {
-      transposer.addOctaveChangeIfAbsent(new Note(mapKey), -1);
-    }
+  /* Transposes a single note and returns the result */
+  public Note transposeNote(Note note) {
+    return new Note(transposer.transpose(note.getNoteNumber()));
   }
 
   /* Takes midi sequence from an inputFile
@@ -270,9 +283,5 @@ public class TransposeTrack {
         }
       }
     }
-  }
-
-  public TransposeMap getTransposer() {
-    return transposer;
   }
 }
