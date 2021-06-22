@@ -145,11 +145,13 @@ public class transposerModel implements Model{
   @Override
   public void setInputMode(int inputMode) {
     this.inputMode = inputMode;
+    updateObservers();
   }
 
   @Override
   public void setOutputMode(int outputMode) {
     this.outputMode = outputMode;
+    updateObservers();
   }
 
   /* Root setters can update the status box if an invalid root is given */
@@ -162,6 +164,7 @@ public class transposerModel implements Model{
       this.inputRoot = inputRoot;
       statusBox.addStatus("Input root updated to " + inputRoot);
     }
+    updateObservers();
   }
 
   @Override
@@ -172,6 +175,7 @@ public class transposerModel implements Model{
       this.outputRoot = outputRoot;
       statusBox.addStatus("Output root updated to " + outputRoot);
     }
+    updateObservers();
   }
 
   @Override

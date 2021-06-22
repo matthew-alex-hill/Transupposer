@@ -1,5 +1,9 @@
 package GUI;
 
+import Transposition.Note;
+import Transposition.TransposeMap;
+import Transposition.TransposeTrack;
+import Transposition.Transposer;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.URL;
@@ -314,6 +318,16 @@ public class transposerView implements Updatable{
     gridy += 3;
     placeInGridFill(outputModePanel, guiPanel, 0, gridy, 3,3, GridBagConstraints.HORIZONTAL);
     gridy += 3;
+
+    JPanel adjustPanel = new JPanel();
+    int root = model.getInputRoot().getNoteNumber();
+    TransposeMap map = new TransposeTrack(model.getInputRoot(), model.getInputMode(), model.getOutputRoot(), model.getOutputMode()).getTransposer();
+
+    for (int i = root; i < root + 12; i++) {
+      adjustPanel.add(new NoteAdjuster(model, new Note(i), new Note(map.transpose(i))).getPanel());
+    }
+
+    placeInGridFill(adjustPanel, guiPanel, 0, gridy++, 3, 1, GridBagConstraints.HORIZONTAL);
 
     if (playPanel.isVisibile()) {
       placeInGridFill(playPanel.getPanel(), guiPanel, 0, gridy, 3, 1, GridBagConstraints.HORIZONTAL);

@@ -38,24 +38,23 @@ public class TransposeTrack {
 
   public TransposeTrack(Note inputRoot, int inputMode,
       Note outputRoot, int outputMode) {
+    makeTransposeTrack(inputRoot, inputMode, outputRoot, outputMode, new Transposer());
+
+  }
+
+  public TransposeTrack(Note inputRoot, int inputMode,
+      Note outputRoot, int outputMode, TransposeMap transposer) {
+    makeTransposeTrack(inputRoot, inputMode, outputRoot, outputMode, transposer);
+  }
+
+  private void makeTransposeTrack(Note inputRoot, int inputMode, Note outputRoot, int outputMode,
+      TransposeMap transposer) {
     this.inputRoot = inputRoot;
     this.inputMode = inputMode % 7;
     this.outputRoot = outputRoot;
     this.outputMode = outputMode % 7;
 
     this.playbackSpeed = 1;
-
-    this.transposer = new Transposer();
-    setUpTransposer();
-
-  }
-
-  public TransposeTrack(Note inputRoot, int inputMode,
-      Note outputRoot, int outputMode, TransposeMap transposer) {
-    this.inputRoot = inputRoot;
-    this.inputMode = inputMode % 7;
-    this.outputRoot = outputRoot;
-    this.outputMode = outputMode % 7;
 
     this.transposer = transposer;
     setUpTransposer();
@@ -273,8 +272,7 @@ public class TransposeTrack {
     }
   }
 
-  public void showMap() {
-    System.out.println(transposer);
+  public TransposeMap getTransposer() {
+    return transposer;
   }
-
 }
