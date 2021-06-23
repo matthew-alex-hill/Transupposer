@@ -75,6 +75,7 @@ public class transposerView implements Updatable{
   private JCheckBox filesOnBox = new JCheckBox("View File Select", true);
   private JCheckBox rootsOnBox = new JCheckBox("View Root Setting", true);
   private JCheckBox playOnBox = new JCheckBox("View Midi Controls", true);
+  private JCheckBox customIntervalBox;
 
   private ToggleablePanel filePanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel rootsPanel = new ToggleablePanel(new JPanel());
@@ -206,15 +207,19 @@ public class transposerView implements Updatable{
     settingsPanel = new JPanel();
     settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 
+    customIntervalBox = new JCheckBox("Enable Scale Customisation", model.isUseCustomIntervals());
 
+    //Setting up panel enable checkboxes
     filesOnBox.addItemListener(new PanelOnController(model, filePanel));
     rootsOnBox.addItemListener(new PanelOnController(model, rootsPanel));
     playOnBox.addItemListener(new PanelOnController(model, playPanel));
+    customIntervalBox.addItemListener(new CustomScaleController(model));
 
     settingsPanel.add(settingsLabel);
     settingsPanel.add(filesOnBox);
     settingsPanel.add(rootsOnBox);
     settingsPanel.add(playOnBox);
+    settingsPanel.add(customIntervalBox);
 
     //gui panel given layout
     guiPanel.setLayout(new GridBagLayout());
@@ -323,12 +328,15 @@ public class transposerView implements Updatable{
     int root = model.getInputRoot().getNoteNumber();
     TransposeTrack tt = new TransposeTrack(model.getInputRoot(), model.getInputMode(), model.getOutputRoot(), model.getOutputMode());
 
-    for (int i = root; i < root + 12; i++) {
-      adjustPanel.add(new NoteAdjuster(model, new Note(i), tt.transposeNote(new Note(i))).getPanel());
+    if (model.isUseCustomIntervals()) {
+      for (int i = root; i < root + 12; i++) {
+        adjustPanel
+            .add(new NoteAdjuster(model, new Note(i), tt.transposeNote(new Note(i))).getPanel());
+      }
+
+      placeInGridFill(adjustPanel, guiPanel, 0, gridy, 3, 2, GridBagConstraints.HORIZONTAL);
+      gridy += 2;
     }
-
-    placeInGridFill(adjustPanel, guiPanel, 0, gridy++, 3, 1, GridBagConstraints.HORIZONTAL);
-
     if (playPanel.isVisibile()) {
       placeInGridFill(playPanel.getPanel(), guiPanel, 0, gridy, 3, 1, GridBagConstraints.HORIZONTAL);
       gridy++;

@@ -30,7 +30,7 @@ public class transposerModel implements Model{
     this.outputMode = 0;
     this.outputRoot = new Note(0);
     this.customIntervals = new HashMap<>();
-    this.useCustomIntervals = true;
+    this.useCustomIntervals = false;
 
     this.inputFile = null;
     this.outputFile = null;
@@ -232,6 +232,16 @@ public class transposerModel implements Model{
   @Override
   public String getOutputFile() {
     return outputFile;
+  }
+
+  @Override
+  public boolean isUseCustomIntervals() {
+    return useCustomIntervals;
+  }
+
+  @Override
+  public void setUseCustomIntervals(boolean useCustomIntervals) {
+    this.useCustomIntervals = useCustomIntervals;
   }
 
   @Override

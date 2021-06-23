@@ -5,8 +5,8 @@ import java.awt.event.ItemListener;
 
 public class PanelOnController implements ItemListener {
   
-  private ToggleablePanel panel;
-  private Model transposerModel;
+  protected ToggleablePanel panel;
+  protected Model transposerModel;
 
   public PanelOnController(Model transposerModel, ToggleablePanel panel) {
     this.transposerModel = transposerModel;

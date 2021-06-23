@@ -1,6 +1,8 @@
 package GUI;
 
 import Transposition.Note;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,6 +17,8 @@ public class NoteAdjuster {
     this.box = new JComboBox<>();
     this.panel = new JPanel();
 
+    panel.setLayout(new GridBagLayout());
+
     box.addActionListener(new NoteAdjusterController(model, note, box));
 
     Note tmp;
@@ -27,8 +31,18 @@ public class NoteAdjuster {
       }
     }
 
-    panel.add(label);
-    panel.add(box);
+    GridBagConstraints c = new GridBagConstraints();
+    c.anchor = GridBagConstraints.LINE_START;
+    c.gridx = 0;
+    c.gridy = 0;
+    c.gridheight = 1;
+    c.gridwidth = 1;
+
+    panel.add(label, c);
+
+    c.anchor = GridBagConstraints.CENTER;
+    c.gridy = 1;
+    panel.add(box, c);
   }
 
   public JPanel getPanel() {

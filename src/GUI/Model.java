@@ -63,6 +63,10 @@ public interface Model {
 
   String getOutputFile();
 
+  boolean isUseCustomIntervals();
+
+  void setUseCustomIntervals(boolean useCustomIntervals);
+
   /* Gets the status text field for the model */
   JTextArea getTextField();
 }
