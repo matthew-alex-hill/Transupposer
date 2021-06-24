@@ -63,6 +63,10 @@ public interface Model {
 
   String getOutputFile();
 
+  Note getCustomNote(Note src);
+
+  boolean containsCustomNote(Note src);
+
   boolean isUseCustomDiatonic();
 
   void setUseCustomDiatonic(boolean useCustomDiatonic);

@@ -328,19 +328,30 @@ public class transposerView implements Updatable{
     JPanel adjustDiatonicPanel = new JPanel(), adjustChromaticPanel = new JPanel();
     int root = model.getInputRoot().getNoteNumber();
     int nextDiatonic = root, numDiatonics = 0;
+    Note currentNote;
+    JPanel currentPanel;
     TransposeTrack tt = new TransposeTrack(model.getInputRoot(), model.getInputMode(), model.getOutputRoot(), model.getOutputMode());
 
     //Step through each note and create an interval for either the diatonic or chromatic panel
     if (model.isUseCustomDiatonic() || model.isUseCustomChromatic()) {
       for (int i = root; i < root + 12; i++) {
+        currentNote = new Note(i);
+
+        if (!model.containsCustomNote(currentNote)) {
+          currentPanel = new NoteAdjuster(model, currentNote, tt.transposeNote(currentNote))
+              .getPanel();
+        } else {
+          currentPanel = new NoteAdjuster(model, currentNote, model.getCustomNote(currentNote))
+              .getPanel();
+        }
         if (i == nextDiatonic) {
           adjustDiatonicPanel
-              .add(new NoteAdjuster(model, new Note(i), tt.transposeNote(new Note(i))).getPanel());
+              .add(currentPanel);
           nextDiatonic += Note.getScaleNote(numDiatonics + model.getInputMode());
           numDiatonics++;
         } else {
           adjustChromaticPanel
-              .add(new NoteAdjuster(model, new Note(i), tt.transposeNote(new Note(i))).getPanel());
+              .add(currentPanel);
         }
       }
 

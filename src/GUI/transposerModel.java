@@ -64,6 +64,7 @@ public class transposerModel implements Model{
     }
 
     if (useCustomDiatonic || useCustomChromatic) {
+      //Uses constructor which sets notes not present in map automatically
       return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode, new Transposer(customIntervals));
     }
 
@@ -173,6 +174,7 @@ public class transposerModel implements Model{
   @Override
   public void setOutputMode(int outputMode) {
     this.outputMode = outputMode;
+    clearCustomIntervals();
     updateObservers();
   }
 
@@ -197,7 +199,14 @@ public class transposerModel implements Model{
       this.outputRoot = outputRoot;
       statusBox.addStatus("Output root updated to " + outputRoot);
     }
+    clearCustomIntervals();
     updateObservers();
+  }
+
+  private void clearCustomIntervals() {
+    for (int i = 0; i < 12; i++) {
+      customIntervals.remove(new Note(i));
+    }
   }
 
   @Override
@@ -239,6 +248,16 @@ public class transposerModel implements Model{
   @Override
   public String getOutputFile() {
     return outputFile;
+  }
+
+  @Override
+  public Note getCustomNote(Note src) {
+    return customIntervals.get(src);
+  }
+
+  @Override
+  public boolean containsCustomNote(Note src) {
+    return customIntervals.containsKey(src);
   }
 
   @Override
