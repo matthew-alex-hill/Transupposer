@@ -1,9 +1,7 @@
 package GUI;
 
 import Transposition.Note;
-import Transposition.TransposeMap;
 import Transposition.TransposeTrack;
-import Transposition.Transposer;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.URL;
@@ -75,7 +73,7 @@ public class transposerView implements Updatable{
   private JCheckBox filesOnBox = new JCheckBox("View File Select", true);
   private JCheckBox rootsOnBox = new JCheckBox("View Root Setting", true);
   private JCheckBox playOnBox = new JCheckBox("View Midi Controls", true);
-  private JCheckBox customIntervalBox;
+  private JCheckBox customDiatonicBox, customChromaticBox;
 
   private ToggleablePanel filePanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel rootsPanel = new ToggleablePanel(new JPanel());
@@ -207,19 +205,22 @@ public class transposerView implements Updatable{
     settingsPanel = new JPanel();
     settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 
-    customIntervalBox = new JCheckBox("Enable Scale Customisation", model.isUseCustomIntervals());
+    customDiatonicBox = new JCheckBox("Enable Diatonic Note Customisation", model.isUseCustomDiatonic());
+    customChromaticBox = new JCheckBox("Enable Chromatic Note Customisation", model.isUseCustomChromatic());
 
     //Setting up panel enable checkboxes
     filesOnBox.addItemListener(new PanelOnController(model, filePanel));
     rootsOnBox.addItemListener(new PanelOnController(model, rootsPanel));
     playOnBox.addItemListener(new PanelOnController(model, playPanel));
-    customIntervalBox.addItemListener(new CustomScaleController(model));
+    customDiatonicBox.addItemListener(new CustomScaleController(model, true));
+    customChromaticBox.addItemListener(new CustomScaleController(model, false));
 
     settingsPanel.add(settingsLabel);
     settingsPanel.add(filesOnBox);
     settingsPanel.add(rootsOnBox);
     settingsPanel.add(playOnBox);
-    settingsPanel.add(customIntervalBox);
+    settingsPanel.add(customDiatonicBox);
+    settingsPanel.add(customChromaticBox);
 
     //gui panel given layout
     guiPanel.setLayout(new GridBagLayout());
@@ -324,19 +325,36 @@ public class transposerView implements Updatable{
     placeInGridFill(outputModePanel, guiPanel, 0, gridy, 3,3, GridBagConstraints.HORIZONTAL);
     gridy += 3;
 
-    JPanel adjustPanel = new JPanel();
+    JPanel adjustDiatonicPanel = new JPanel(), adjustChromaticPanel = new JPanel();
     int root = model.getInputRoot().getNoteNumber();
+    int nextDiatonic = root, numDiatonics = 0;
     TransposeTrack tt = new TransposeTrack(model.getInputRoot(), model.getInputMode(), model.getOutputRoot(), model.getOutputMode());
 
-    if (model.isUseCustomIntervals()) {
+    //Step through each note and create an interval for either the diatonic or chromatic panel
+    if (model.isUseCustomDiatonic() || model.isUseCustomChromatic()) {
       for (int i = root; i < root + 12; i++) {
-        adjustPanel
-            .add(new NoteAdjuster(model, new Note(i), tt.transposeNote(new Note(i))).getPanel());
+        if (i == nextDiatonic) {
+          adjustDiatonicPanel
+              .add(new NoteAdjuster(model, new Note(i), tt.transposeNote(new Note(i))).getPanel());
+          nextDiatonic += Note.getScaleNote(numDiatonics + model.getInputMode());
+          numDiatonics++;
+        } else {
+          adjustChromaticPanel
+              .add(new NoteAdjuster(model, new Note(i), tt.transposeNote(new Note(i))).getPanel());
+        }
       }
 
-      placeInGridFill(adjustPanel, guiPanel, 0, gridy, 3, 2, GridBagConstraints.HORIZONTAL);
-      gridy += 2;
+      if (model.isUseCustomDiatonic()) {
+        placeInGridFill(adjustDiatonicPanel, guiPanel, 0, gridy++, 3, 1,
+            GridBagConstraints.HORIZONTAL);
+      }
+
+      if (model.isUseCustomChromatic()) {
+        placeInGridFill(adjustChromaticPanel, guiPanel, 0, gridy++, 3, 1,
+            GridBagConstraints.HORIZONTAL);
+      }
     }
+
     if (playPanel.isVisibile()) {
       placeInGridFill(playPanel.getPanel(), guiPanel, 0, gridy, 3, 1, GridBagConstraints.HORIZONTAL);
       gridy++;

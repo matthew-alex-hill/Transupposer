@@ -9,6 +9,11 @@ public interface TransposeMap {
   /* Puts a pair of two notes into the intervals map if the key is not present*/
   void addIntervalIfAbsent(Note src, Note dst);
 
+  /* Gets a transposed interval from the map */
+  Note getInterval(Note src);
+
+  Note getInterval(int src);
+
   /* Returns whether the transpose map contains the note src as a key */
   boolean containsInterval(Note src);
 

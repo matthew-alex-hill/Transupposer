@@ -92,7 +92,8 @@ public class Note {
 
   /* Returns the ith note of a major scale */
   public static int getScaleNote(int i) {
-    return scale.get(i % scale.size());
+    int mod = i % scale.size();
+    return scale.get((mod < 0 ? mod + scale.size() : mod));
   }
 
   @Override

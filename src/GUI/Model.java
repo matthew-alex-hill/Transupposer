@@ -63,9 +63,13 @@ public interface Model {
 
   String getOutputFile();
 
-  boolean isUseCustomIntervals();
+  boolean isUseCustomDiatonic();
 
-  void setUseCustomIntervals(boolean useCustomIntervals);
+  void setUseCustomDiatonic(boolean useCustomDiatonic);
+
+  boolean isUseCustomChromatic();
+
+  void setUseCustomChromatic(boolean useCustomChromatic);
 
   /* Gets the status text field for the model */
   JTextArea getTextField();

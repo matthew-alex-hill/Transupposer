@@ -30,6 +30,17 @@ public class Transposer implements TransposeMap {
     intervals.putIfAbsent(src, dst);
   }
 
+  /* Gets a transposed interval from the map */
+  @Override
+  public Note getInterval(Note src) {
+    return intervals.get(src);
+  }
+
+  @Override
+  public Note getInterval(int src) {
+    return intervals.get(new Note(src));
+  }
+
   /* Returns whether the transpose map contains the note src as a key */
   @Override
   public boolean containsInterval(Note src) {

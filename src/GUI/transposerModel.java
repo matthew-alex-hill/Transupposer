@@ -17,9 +17,10 @@ public class transposerModel implements Model{
   private int inputMode, outputMode;
   private Note inputRoot, outputRoot;
   private String inputFile, outputFile;
-  private Map<Note,Note> customIntervals;
-  private boolean useCustomIntervals;
-  private StatusBox statusBox;
+  private final Map<Note,Note> customIntervals;
+  private boolean useCustomDiatonic;
+  private boolean useCustomChromatic;
+  private final StatusBox statusBox;
 
   private final List<Updatable> views;
 
@@ -30,7 +31,8 @@ public class transposerModel implements Model{
     this.outputMode = 0;
     this.outputRoot = new Note(0);
     this.customIntervals = new HashMap<>();
-    this.useCustomIntervals = false;
+    this.useCustomDiatonic = false;
+    this.useCustomChromatic = false;
 
     this.inputFile = null;
     this.outputFile = null;
@@ -52,14 +54,19 @@ public class transposerModel implements Model{
 
   /* Creates a new transpose track from current fields */
   private TransposeTrack getTransposeTrack() {
-    if (useCustomIntervals) {
+    if (useCustomDiatonic && useCustomChromatic) {
       try {
         return new TransposeTrack(inputRoot, outputRoot, new Transposer(customIntervals));
       } catch (TranspositionException e) {
         addStatus(e.getMessage());
-        addStatus("Transposing with selected mode sliders instead");
+        addStatus("Transposing may have unexpected results");
       }
     }
+
+    if (useCustomDiatonic || useCustomChromatic) {
+      return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode, new Transposer(customIntervals));
+    }
+
     return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
   }
 
@@ -235,13 +242,23 @@ public class transposerModel implements Model{
   }
 
   @Override
-  public boolean isUseCustomIntervals() {
-    return useCustomIntervals;
+  public boolean isUseCustomDiatonic() {
+    return useCustomDiatonic;
   }
 
   @Override
-  public void setUseCustomIntervals(boolean useCustomIntervals) {
-    this.useCustomIntervals = useCustomIntervals;
+  public void setUseCustomDiatonic(boolean useCustomDiatonic) {
+    this.useCustomDiatonic = useCustomDiatonic;
+  }
+
+  @Override
+  public boolean isUseCustomChromatic() {
+    return useCustomChromatic;
+  }
+
+  @Override
+  public void setUseCustomChromatic(boolean useCustomChromatic) {
+    this.useCustomChromatic = useCustomChromatic;
   }
 
   @Override

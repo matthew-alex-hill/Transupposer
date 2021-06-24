@@ -109,17 +109,17 @@ public class TransposeTrack {
         workingRoot = (workingRoot + Note.getScaleNote(outputMode + i - 1));
         workingNote = (workingNote + Note.getScaleNote(inputMode + i - 1)) % 12;
 
-        transposer.addInterval(new Note(workingNote), new Note(workingRoot + transposeGap));
+        transposer.addIntervalIfAbsent(new Note(workingNote), new Note(workingRoot + transposeGap));
 
-        transposer.addOctaveIfNeeded(workingRoot + transposeGap, workingNote, interval);
+        transposer.addOctaveIfNeeded(transposer.getInterval(workingNote).getNoteNumber(), workingNote, interval);
       }
     }
 
     /* Map chromatic notes and note 1 to same note with new root */
     for (int i = 0; i < 12; i++) {
       if (!transposer.containsInterval(new Note(i))) {
-        transposer.addInterval(new Note(i), new Note(i + interval));
-        transposer.addOctaveIfNeeded(i + interval, i, interval);
+        transposer.addIntervalIfAbsent(new Note(i), new Note(i + interval));
+        transposer.addOctaveIfNeeded(transposer.getInterval(i).getNoteNumber(), i, interval);
       }
     }
   }
