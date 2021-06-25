@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class NoteAdjuster {
+
   private final JLabel label;
   private final JComboBox<Note> box;
   private final JPanel panel;

@@ -8,7 +8,7 @@ import javax.swing.event.ChangeEvent;
 public class NoteAdjusterController extends Controller {
 
   Note base;
-  private JComboBox<Note> box;
+  private final JComboBox<Note> box;
 
   public NoteAdjusterController(Model transposerModel, Note base, JComboBox<Note> box) {
     super(transposerModel);

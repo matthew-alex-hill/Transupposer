@@ -6,8 +6,9 @@ import javax.swing.event.ChangeEvent;
 
 /* Change listener for the mode sliders */
 public class SliderController extends Controller {
-  private JSlider slider;
+
   boolean isInput;
+  private final JSlider slider;
 
   public SliderController(Model transposerModel, JSlider slider, boolean isInput) {
     super(transposerModel);

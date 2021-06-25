@@ -8,17 +8,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 /* Action listener for file browse buttons */
 public class FileOpenController extends Controller {
 
-  private FileWindowListener listener;
-  private JFileChooser fileChooser = new JFileChooser();
-  private boolean isInput;
-
-  public static FileOpenController newInputFileOpenController(Model model) {
-    return new FileOpenController(model, true);
-  }
-
-  public static FileOpenController newOutputFileOpenController(Model model) {
-    return new FileOpenController(model, false);
-  }
+  private final FileWindowListener listener;
+  private final JFileChooser fileChooser = new JFileChooser();
+  private final boolean isInput;
 
   private FileOpenController(Model model, boolean isInput) {
     super(model);
@@ -28,6 +20,14 @@ public class FileOpenController extends Controller {
 
     listener = new FileWindowListener(isInput, this, transposerModel);
     fileChooser.addActionListener(listener);
+  }
+
+  public static FileOpenController newInputFileOpenController(Model model) {
+    return new FileOpenController(model, true);
+  }
+
+  public static FileOpenController newOutputFileOpenController(Model model) {
+    return new FileOpenController(model, false);
   }
 
   public JFileChooser getFileChooser() {

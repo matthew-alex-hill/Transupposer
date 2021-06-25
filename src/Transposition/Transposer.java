@@ -5,8 +5,9 @@ import java.util.Map;
 
 /* Implementation of Transposition.TransposeMap which uses a Hashmap for transposed notes and octaves */
 public class Transposer implements TransposeMap {
-  private Map<Note, Note> intervals;
-  private HashMap<Note, Integer> octaveChanges;
+
+  private final Map<Note, Note> intervals;
+  private final HashMap<Note, Integer> octaveChanges;
 
   public Transposer() {
     intervals = new HashMap<>();
@@ -60,7 +61,7 @@ public class Transposer implements TransposeMap {
   }
 
   /* Creates a new Transposition.Pitch from a Midi Frequency
-  *  Octaves range from 0 to 10 instead of -1 to 9 so are offset by 1 */
+   *  Octaves range from 0 to 10 instead of -1 to 9 so are offset by 1 */
   @Override
   public Pitch pitchFromFrequency(int frequency) {
     return new Pitch(frequency / 12, new Note(frequency));
@@ -73,7 +74,7 @@ public class Transposer implements TransposeMap {
   }
 
   /* Gets the transposed frequency of a Midi Frequency
-  *  Transposing done via the intervals map */
+   *  Transposing done via the intervals map */
   @Override
   public int transpose(int frequency) {
     Pitch pitch = pitchFromFrequency(frequency);

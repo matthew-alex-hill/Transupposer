@@ -4,12 +4,11 @@ import java.awt.event.ActionEvent;
 import javax.sound.midi.Sequencer;
 import javax.swing.event.ChangeEvent;
 
-public class SequencerController extends Controller{
+public class SequencerController extends Controller {
 
-  private Sequencer sequencer;
+  private static final long OFFSET = 10000000;
   private final SequencerCommand command;
-  private static long OFFSET = 10000000;
-
+  private Sequencer sequencer;
 
 
   public SequencerController(Model transposerModel, Sequencer sequencer, SequencerCommand command) {

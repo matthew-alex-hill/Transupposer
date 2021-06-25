@@ -10,9 +10,9 @@ import java.io.File;
 public class FileWindowListener implements WindowListener, ActionListener {
 
 
-  private FileOpenController controller;
-  private Model model;
-  private boolean isInput;
+  private final FileOpenController controller;
+  private final Model model;
+  private final boolean isInput;
 
   public FileWindowListener(boolean isInput, FileOpenController controller, Model model) {
     this.isInput = isInput;

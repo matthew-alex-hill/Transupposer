@@ -4,8 +4,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 public class CustomScaleController implements ItemListener {
-  private Model transposerModel;
-  private boolean isDiatonic;
+
+  private final Model transposerModel;
+  private final boolean isDiatonic;
 
   public CustomScaleController(Model transposerModel, boolean isDiatonic) {
     this.transposerModel = transposerModel;

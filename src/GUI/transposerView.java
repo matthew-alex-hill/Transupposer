@@ -2,8 +2,10 @@ package GUI;
 
 import Transposition.Note;
 import Transposition.TransposeTrack;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -35,7 +37,8 @@ public class transposerView implements Updatable{
 
   private static int NUM_ROWS = 12;
   private static int NUM_COLUMNS = 8;
-
+  private final JScrollPane scroller;
+  private final JFrame frame;
   private JSlider inputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
   private JSlider outputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
   private JTextField inputRootField = new JTextField(12);
@@ -44,14 +47,13 @@ public class transposerView implements Updatable{
   private JButton outputRootButton = new JButton("Submit");
   private JFileChooser inputFileChooser = new JFileChooser();
   private JFileChooser outputFileChooser = new JFileChooser();
-
   private JButton inputFileBrowse = new JButton("Browse");
   private JButton outputFileBrowse = new JButton("Browse");
   private JTextField inputFileName = new JTextField(50);
   private JTextField outputFileName = new JTextField(50);
-
-  private JLabel inputRootLabel = new JLabel("Input Root ");
-  private JLabel outputRootLabel = new JLabel("Output Root");
+  private JLabel inputRootLabel = new JLabel("Input");
+  private JLabel outputRootLabel = new JLabel("Output");
+  private JLabel rootsLabel = new JLabel("Set Roots");
   private JLabel inputFileLabel = new JLabel("Input File");
   private JLabel outputFileLabel = new JLabel("Output File");
   private JLabel inputModeLabel = new JLabel("Input Mode");
@@ -59,7 +61,6 @@ public class transposerView implements Updatable{
   private JLabel settingsLabel = new JLabel("Settings");
   private String darkestLabel = "Dark";
   private String brightestLabel = "Bright";
-
   private JButton transposeButton = new JButton("Transpose to File");
   private JButton playButton = new JButton("▶️︎");
   private JButton stopButton = new JButton("◼︎");
@@ -67,28 +68,26 @@ public class transposerView implements Updatable{
   private JButton rewindButton = new JButton("◀︎◀︎");
   private JButton stepForwardButton = new JButton("➡️");
   private JButton stepBackwardButton = new JButton("⬅️");
-
   private JComboBox<String> sequencerSelector = new JComboBox<>();
-
   private JCheckBox filesOnBox = new JCheckBox("View File Select", true);
   private JCheckBox rootsOnBox = new JCheckBox("View Root Setting", true);
   private JCheckBox playOnBox = new JCheckBox("View Midi Controls", true);
   private JCheckBox customDiatonicBox, customChromaticBox;
-
   private ToggleablePanel filePanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel rootsPanel = new ToggleablePanel(new JPanel());
   private JPanel inputModePanel = new JPanel();
   private JPanel outputModePanel = new JPanel();
   private ToggleablePanel playPanel = new ToggleablePanel(new JPanel());
   private JPanel settingsPanel = new JPanel();
-  private final JScrollPane scroller;
-  private final JFrame frame;
   private JPanel guiPanel = new JPanel();
 
   public transposerView(Model model) {
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
     //frame that the the main window is in
     frame = new JFrame(transposerGUI.VERSION_NAME);
-    frame.setSize(600, 800);
+    frame.setSize((int) (screenSize.getWidth() / 2.8),
+        (int) (screenSize.getHeight() / 2.2));
 
     URL iconURL = getClass().getResource("transupposer icon.png");
 
@@ -159,12 +158,13 @@ public class transposerView implements Updatable{
     placeInGridAnchor(outputFileBrowse, filePanel.getPanel(),7,1,1,1, GridBagConstraints.LINE_END);
 
     //Root selectors
-    placeInGridAnchor(inputRootLabel, rootsPanel.getPanel(), 0,0,1,1, GridBagConstraints.LINE_START);
-    placeInGridFill(inputRootField, rootsPanel.getPanel(),1,0,2,1, GridBagConstraints.HORIZONTAL);
-    placeInGrid(inputRootButton, rootsPanel.getPanel(), 3,0,1,1);
-    placeInGrid(outputRootLabel, rootsPanel.getPanel(), 4,0,1,1);
-    placeInGridFill(outputRootField, rootsPanel.getPanel(),5,0,2,1, GridBagConstraints.HORIZONTAL);
-    placeInGridAnchor(outputRootButton, rootsPanel.getPanel(), 7,0,1,1, GridBagConstraints.LINE_END);
+    placeInGridAnchor(rootsLabel, rootsPanel.getPanel(), 0, 0, NUM_COLUMNS, 1, GridBagConstraints.CENTER);
+    placeInGridAnchor(inputRootLabel, rootsPanel.getPanel(), 0,1,1,1, GridBagConstraints.LINE_START);
+    placeInGridFill(inputRootField, rootsPanel.getPanel(),1,1,2,1, GridBagConstraints.HORIZONTAL);
+    placeInGrid(inputRootButton, rootsPanel.getPanel(), 3,1,1,1);
+    placeInGrid(outputRootLabel, rootsPanel.getPanel(), 4,1,1,1);
+    placeInGridFill(outputRootField, rootsPanel.getPanel(),5,1,2,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(outputRootButton, rootsPanel.getPanel(), 7,1,1,1, GridBagConstraints.LINE_END);
 
     //Labels for modes
     Dictionary<Integer, JComponent> modes = new Hashtable<Integer, JComponent>();
@@ -205,8 +205,8 @@ public class transposerView implements Updatable{
     settingsPanel = new JPanel();
     settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 
-    customDiatonicBox = new JCheckBox("Enable Diatonic Note Customisation", model.isUseCustomDiatonic());
-    customChromaticBox = new JCheckBox("Enable Chromatic Note Customisation", model.isUseCustomChromatic());
+    customDiatonicBox = new JCheckBox("Diatonic Note Customisation", model.isUseCustomDiatonic());
+    customChromaticBox = new JCheckBox("Chromatic Note Customisation", model.isUseCustomChromatic());
 
     //Setting up panel enable checkboxes
     filesOnBox.addItemListener(new PanelOnController(model, filePanel));
@@ -316,8 +316,8 @@ public class transposerView implements Updatable{
     }
 
     if (rootsPanel.isVisibile()) {
-      placeInGridFill(rootsPanel.getPanel(), guiPanel, 0, gridy, 3, 1, GridBagConstraints.HORIZONTAL);
-      gridy++;
+      placeInGridFill(rootsPanel.getPanel(), guiPanel, 0, gridy, 3, 2, GridBagConstraints.HORIZONTAL);
+      gridy += 2;
     }
 
     placeInGridFill(inputModePanel, guiPanel, 0, gridy, 3, 3, GridBagConstraints.HORIZONTAL);
@@ -377,8 +377,8 @@ public class transposerView implements Updatable{
     JPanel framePanel = new JPanel();
     framePanel.setLayout(new GridBagLayout());
 
-    placeInFrame(guiPanel, framePanel, 0,1,0.8);
     placeInFrame(new JSeparator(SwingConstants.VERTICAL), framePanel, 1,0, 0);
+    placeInFrame(guiPanel, framePanel, 0,1,0.8);
     placeInFrame(settingsPanel, framePanel, 1,1, 0.2);
 
     framePanel.setVisible(false);

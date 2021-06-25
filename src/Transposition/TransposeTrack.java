@@ -16,7 +16,7 @@ import javax.sound.midi.Track;
 
 
 /* Contains information about input and output key and a Transposition.Transposer object to intereact with
-*  Public methods let user transpose all notes in a midi sequence to file or to audio or print the transposer map */
+ *  Public methods let user transpose all notes in a midi sequence to file or to audio or print the transposer map */
 public class TransposeTrack {
 
 
@@ -50,7 +50,7 @@ public class TransposeTrack {
   }
 
   //Uses an existig transpose map to generate only an octaves map
-  public TransposeTrack (Note inputRoot, Note outputRoot, TransposeMap transposer)
+  public TransposeTrack(Note inputRoot, Note outputRoot, TransposeMap transposer)
       throws TranspositionException {
     this.inputRoot = inputRoot;
     this.outputRoot = outputRoot;
@@ -61,7 +61,8 @@ public class TransposeTrack {
       if (!transposer.containsInterval(tmp)) {
         throw new TranspositionException("Note " + tmp + " not found in transpose map");
       }
-      transposer.addOctaveIfNeeded(i, transposeNote(tmp).getNoteNumber(), outputRoot.getNoteNumber() - inputRoot.getNoteNumber());
+      transposer.addOctaveIfNeeded(i, transposeNote(tmp).getNoteNumber(),
+          outputRoot.getNoteNumber() - inputRoot.getNoteNumber());
     }
   }
 
@@ -111,7 +112,9 @@ public class TransposeTrack {
 
         transposer.addIntervalIfAbsent(new Note(workingNote), new Note(workingRoot + transposeGap));
 
-        transposer.addOctaveIfNeeded(transposer.getInterval(workingNote).getNoteNumber(), workingNote, interval);
+        transposer
+            .addOctaveIfNeeded(transposer.getInterval(workingNote).getNoteNumber(), workingNote,
+                interval);
       }
     }
 
@@ -203,8 +206,8 @@ public class TransposeTrack {
   }
 
   /* Takes in a file and generates a transposed sequence from it
-  *  Returns the sequence or null if an error occurs
-  *  Errors include invalid midi messages in a file, invalid file type or IO exceptions */
+   *  Returns the sequence or null if an error occurs
+   *  Errors include invalid midi messages in a file, invalid file type or IO exceptions */
   private Sequence transposeFile(File inputFile) throws TranspositionException {
     try {
       Sequence inputSequence = MidiSystem.getSequence(inputFile);
@@ -261,17 +264,19 @@ public class TransposeTrack {
             } catch (InvalidMidiDataException e) {
               e.printStackTrace();
 
-              throw new TranspositionException("Invalid Transposition.Note: " + tmpMessage.getStatus() + ", " +
-                  transposer.transpose(shortMessage.getData1()) + ", " +
-                  shortMessage.getData2());
+              throw new TranspositionException(
+                  "Invalid Transposition.Note: " + tmpMessage.getStatus() + ", " +
+                      transposer.transpose(shortMessage.getData1()) + ", " +
+                      shortMessage.getData2());
             }
           }
 
         } else {
           //if we are changing to a drum program, put the channel in the do not transpose list
-          if (messageType == ShortMessage.PROGRAM_CHANGE){
+          if (messageType == ShortMessage.PROGRAM_CHANGE) {
             shortMessage = (ShortMessage) tmpMessage;
-            if (shortMessage.getData1() >= percussiveMin || shortMessage.getChannel() == drumChannel) {
+            if (shortMessage.getData1() >= percussiveMin
+                || shortMessage.getChannel() == drumChannel) {
               drumChannels.add(shortMessage.getChannel());
             } else {
               //remove from the do not transpose list if we are changing to a melodic program

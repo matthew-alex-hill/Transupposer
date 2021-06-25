@@ -12,17 +12,16 @@ import java.util.Map;
 import javax.sound.midi.Sequencer;
 import javax.swing.JTextArea;
 
-public class transposerModel implements Model{
+public class transposerModel implements Model {
 
+  private final Map<Note, Note> customIntervals;
+  private final StatusBox statusBox;
+  private final List<Updatable> views;
   private int inputMode, outputMode;
   private Note inputRoot, outputRoot;
   private String inputFile, outputFile;
-  private final Map<Note,Note> customIntervals;
   private boolean useCustomDiatonic;
   private boolean useCustomChromatic;
-  private final StatusBox statusBox;
-
-  private final List<Updatable> views;
 
   public transposerModel() {
     this.views = new ArrayList<>();
@@ -47,7 +46,7 @@ public class transposerModel implements Model{
   /* Updates all views available to the model */
   @Override
   public void updateObservers() {
-    for (Updatable u: views) {
+    for (Updatable u : views) {
       u.update(this);
     }
   }
@@ -65,7 +64,8 @@ public class transposerModel implements Model{
 
     if (useCustomDiatonic || useCustomChromatic) {
       //Uses constructor which sets notes not present in map automatically
-      return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode, new Transposer(customIntervals));
+      return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode,
+          new Transposer(customIntervals));
     }
 
     return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
@@ -130,7 +130,7 @@ public class transposerModel implements Model{
   }
 
   @Override
-  public  void stop(Sequencer sequencer) {
+  public void stop(Sequencer sequencer) {
     TransposeTrack tt = getTransposeTrack();
 
     try {
@@ -151,56 +151,6 @@ public class transposerModel implements Model{
   public void changeSpeed(Sequencer sequencer, boolean forwards) {
     TransposeTrack tt = getTransposeTrack();
     tt.changeSpeed(sequencer, forwards);
-  }
-
-  @Override
-  public void setInputFile(String path) {
-    inputFile = path;
-    updateObservers();
-  }
-
-  @Override
-  public void setOutputFile(String path) {
-    outputFile = path;
-    updateObservers();
-  }
-
-  @Override
-  public void setInputMode(int inputMode) {
-    this.inputMode = inputMode;
-    updateObservers();
-  }
-
-  @Override
-  public void setOutputMode(int outputMode) {
-    this.outputMode = outputMode;
-    clearCustomIntervals();
-    updateObservers();
-  }
-
-  /* Root setters can update the status box if an invalid root is given */
-
-  @Override
-  public void setInputRoot(Note inputRoot) {
-    if (inputRoot == null) {
-      statusBox.addStatus("Invalid note entered, cannot change input root");
-    } else {
-      this.inputRoot = inputRoot;
-      statusBox.addStatus("Input root updated to " + inputRoot);
-    }
-    updateObservers();
-  }
-
-  @Override
-  public void setOutputRoot(Note outputRoot) {
-    if (outputRoot == null) {
-      statusBox.addStatus("Invalid note entered, cannot change output root");
-    } else {
-      this.outputRoot = outputRoot;
-      statusBox.addStatus("Output root updated to " + outputRoot);
-    }
-    clearCustomIntervals();
-    updateObservers();
   }
 
   private void clearCustomIntervals() {
@@ -225,9 +175,24 @@ public class transposerModel implements Model{
     return inputMode;
   }
 
+  /* Root setters can update the status box if an invalid root is given */
+
+  @Override
+  public void setInputMode(int inputMode) {
+    this.inputMode = inputMode;
+    updateObservers();
+  }
+
   @Override
   public int getOutputMode() {
     return outputMode;
+  }
+
+  @Override
+  public void setOutputMode(int outputMode) {
+    this.outputMode = outputMode;
+    clearCustomIntervals();
+    updateObservers();
   }
 
   @Override
@@ -236,8 +201,31 @@ public class transposerModel implements Model{
   }
 
   @Override
+  public void setInputRoot(Note inputRoot) {
+    if (inputRoot == null) {
+      statusBox.addStatus("Invalid note entered, cannot change input root");
+    } else {
+      this.inputRoot = inputRoot;
+      statusBox.addStatus("Input root updated to " + inputRoot);
+    }
+    updateObservers();
+  }
+
+  @Override
   public Note getOutputRoot() {
     return outputRoot;
+  }
+
+  @Override
+  public void setOutputRoot(Note outputRoot) {
+    if (outputRoot == null) {
+      statusBox.addStatus("Invalid note entered, cannot change output root");
+    } else {
+      this.outputRoot = outputRoot;
+      statusBox.addStatus("Output root updated to " + outputRoot);
+    }
+    clearCustomIntervals();
+    updateObservers();
   }
 
   @Override
@@ -246,8 +234,20 @@ public class transposerModel implements Model{
   }
 
   @Override
+  public void setInputFile(String path) {
+    inputFile = path;
+    updateObservers();
+  }
+
+  @Override
   public String getOutputFile() {
     return outputFile;
+  }
+
+  @Override
+  public void setOutputFile(String path) {
+    outputFile = path;
+    updateObservers();
   }
 
   @Override
