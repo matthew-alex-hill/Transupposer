@@ -22,6 +22,7 @@ public class transposerModel implements Model {
   private String inputFile, outputFile;
   private boolean useCustomDiatonic;
   private boolean useCustomChromatic;
+  private long microsecondPosition;
 
   public transposerModel() {
     this.views = new ArrayList<>();
@@ -123,6 +124,7 @@ public class transposerModel implements Model {
 
     try {
       tt.transposeAndPlay(input, sequencer);
+      sequencer.setMicrosecondPosition(microsecondPosition);
       addStatus("Playing transposed Midi from " + inputFile);
     } catch (TranspositionException e) {
       addStatus(e.getMessage());
@@ -136,9 +138,29 @@ public class transposerModel implements Model {
     try {
       tt.stop(sequencer);
       addStatus("Stopped sequencer output");
+      microsecondPosition = 0;
     } catch (TranspositionException e) {
       addStatus(e.getMessage());
     }
+  }
+
+  @Override
+  public void pause(Sequencer sequencer) {
+    TransposeTrack tt = getTransposeTrack();
+
+    try {
+      tt.pause(sequencer);
+    } catch (TranspositionException e) {
+      addStatus(e.getMessage());
+    }
+
+    microsecondPosition = tt.getMicrosecondPosition();
+  }
+
+  @Override
+  public void changeTransposer(Sequencer sequencer) {
+    pause(sequencer);
+    transposeAndPlay(sequencer);
   }
 
   @Override

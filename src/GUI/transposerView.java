@@ -61,9 +61,11 @@ public class transposerView implements Updatable{
   private JLabel settingsLabel = new JLabel("Settings");
   private String darkestLabel = "Dark";
   private String brightestLabel = "Bright";
+  private JButton updateButton = new JButton("Update Scales");
   private JButton transposeButton = new JButton("Transpose to File");
   private JButton playButton = new JButton("▶️︎");
   private JButton stopButton = new JButton("◼︎");
+  private JButton pauseButton = new JButton("⏐⏐");
   private JButton fastForwardButton = new JButton("▶︎▶︎");
   private JButton rewindButton = new JButton("◀︎◀︎");
   private JButton stepForwardButton = new JButton("➡️");
@@ -95,6 +97,15 @@ public class transposerView implements Updatable{
       frame.setIconImage(new ImageIcon(iconURL).getImage());
     }
 
+    //setting up midi sequencer
+    Sequencer defaultSequencer = null;
+
+    try {
+      defaultSequencer = MidiSystem.getSequencer();
+    } catch (MidiUnavailableException e) {
+      model.addStatus(e.getMessage() + ", midi playback will likely not work");
+    }
+
     //setting layouts for global panels
     filePanel.setLayout(new GridBagLayout());
     rootsPanel.setLayout(new GridBagLayout());
@@ -110,18 +121,12 @@ public class transposerView implements Updatable{
     outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
 
     transposeButton.addActionListener(new transposeController(model));
+    updateButton.addActionListener(new transposerUpdateController(model, defaultSequencer));
 
     //setting up midi playback buttons
-    Sequencer defaultSequencer = null;
-
-    try {
-      defaultSequencer = MidiSystem.getSequencer();
-    } catch (MidiUnavailableException e) {
-      model.addStatus(e.getMessage() + ", midi playback will likely not work");
-    }
-
     addSequencerController(playButton, SequencerCommand.PLAY, model, defaultSequencer);
     addSequencerController(stopButton, SequencerCommand.STOP, model, defaultSequencer);
+    addSequencerController(pauseButton, SequencerCommand.PAUSE, model, defaultSequencer);
     addSequencerController(fastForwardButton, SequencerCommand.FAST_FORWARD, model, defaultSequencer);
     addSequencerController(rewindButton, SequencerCommand.REWIND, model, defaultSequencer);
     addSequencerController(stepForwardButton, SequencerCommand.STEP_FORWARD, model, defaultSequencer);
@@ -194,6 +199,7 @@ public class transposerView implements Updatable{
     playPanel.add(stepBackwardButton);
     playPanel.add(rewindButton);
     playPanel.add(stopButton);
+    playPanel.add(pauseButton);
     playPanel.add(playButton);
     playPanel.add(fastForwardButton);
     playPanel.add(stepForwardButton);
@@ -371,7 +377,8 @@ public class transposerView implements Updatable{
       gridy++;
     }
 
-    placeInGrid(transposeButton, guiPanel, 1, gridy++, 1, 1);
+    placeInGrid(updateButton, guiPanel, 0, gridy, 1,1);
+    placeInGrid(transposeButton, guiPanel, 2, gridy++, 1, 1);
     placeInGridFill(scroller, guiPanel, 0, gridy, 3,1, GridBagConstraints.BOTH);
 
     JPanel framePanel = new JPanel();

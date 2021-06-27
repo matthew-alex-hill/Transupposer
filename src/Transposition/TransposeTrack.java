@@ -34,7 +34,7 @@ public class TransposeTrack {
   private Note inputRoot;
   private Note outputRoot;
 
-  private double playbackSpeed;
+  private long microsecondPosition = 0;
 
   //Creates new transpose map with roots and modes
   public TransposeTrack(Note inputRoot, int inputMode,
@@ -72,8 +72,6 @@ public class TransposeTrack {
     this.inputMode = inputMode % 7;
     this.outputRoot = outputRoot;
     this.outputMode = outputMode % 7;
-
-    this.playbackSpeed = 1;
 
     this.transposer = transposer;
     setUpTransposer();
@@ -183,6 +181,12 @@ public class TransposeTrack {
     }
   }
 
+  /* Stops a playing sequence and stores the current position, throws an exception if it cannot be stopped */
+  public void pause(Sequencer sequencer) throws TranspositionException {
+    microsecondPosition = sequencer.getMicrosecondPosition();
+    stop(sequencer);
+  }
+
   /* Steps midi playback by a given offset in microseconds */
   public void step(Sequencer sequencer, long microseconds) {
     sequencer.setMicrosecondPosition(sequencer.getMicrosecondPosition() + microseconds);
@@ -203,6 +207,14 @@ public class TransposeTrack {
     }
 
     sequencer.setTempoFactor((float) Math.pow(2, newTempoFac));
+  }
+
+  public long getMicrosecondPosition() {
+    return microsecondPosition;
+  }
+
+  public void setMicrosecondPosition(long microsecondPosition) {
+    this.microsecondPosition = microsecondPosition;
   }
 
   /* Takes in a file and generates a transposed sequence from it

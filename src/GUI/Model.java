@@ -18,6 +18,12 @@ public interface Model {
   /* Stops the provided sequencer from sending midi messages */
   void stop(Sequencer sequencer);
 
+  /* Pauses playback of midi sequence */
+  void pause(Sequencer sequencer);
+
+  /* Updates transposer to current settings and resumes playback */
+  void changeTransposer(Sequencer sequencer);
+
   /* Steps the sequencer playback by the given number of microseconds */
   void step(Sequencer sequencer, long microseconds);
 

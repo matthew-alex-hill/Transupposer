@@ -31,6 +31,9 @@ public class SequencerController extends Controller {
       case PLAY:
         transposerModel.transposeAndPlay(sequencer);
         break;
+      case PAUSE:
+        transposerModel.pause(sequencer);
+        break;
       case STOP:
         transposerModel.stop(sequencer);
         break;
