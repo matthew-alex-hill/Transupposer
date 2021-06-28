@@ -1,5 +1,6 @@
 package GUI;
 
+import GUI.Controllers.NoteAdjusterController;
 import Transposition.Note;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

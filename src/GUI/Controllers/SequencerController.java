@@ -1,5 +1,6 @@
-package GUI;
+package GUI.Controllers;
 
+import GUI.Model;
 import java.awt.event.ActionEvent;
 import javax.swing.event.ChangeEvent;
 
@@ -40,6 +41,9 @@ public class SequencerController extends Controller {
         break;
       case UPDATE:
         transposerModel.changeTransposer();
+        break;
+      case SAVE:
+        transposerModel.transposeToFile();
         break;
     }
   }

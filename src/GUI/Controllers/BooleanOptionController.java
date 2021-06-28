@@ -1,5 +1,6 @@
-package GUI;
+package GUI.Controllers;
 
+import GUI.Model;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 

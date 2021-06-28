@@ -1,5 +1,14 @@
 package GUI;
 
+import GUI.Controllers.BooleanOptionController;
+import GUI.Controllers.FileOpenController;
+import GUI.Controllers.Option;
+import GUI.Controllers.PanelOnController;
+import GUI.Controllers.SequencerCommand;
+import GUI.Controllers.SequencerController;
+import GUI.Controllers.SequencerSelectorController;
+import GUI.Controllers.SliderController;
+import GUI.Controllers.SubmitController;
 import Transposition.Note;
 import Transposition.TransposeTrack;
 import java.awt.Dimension;
@@ -121,7 +130,7 @@ public class transposerView implements Updatable{
     inputRootButton.addActionListener(new SubmitController(model, true, inputRootField));
     outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
 
-    transposeButton.addActionListener(new transposeController(model));
+    transposeButton.addActionListener(new SequencerController(model, SequencerCommand.SAVE));
     updateButton.addActionListener(new SequencerController(model, SequencerCommand.UPDATE));
 
     //setting up midi playback buttons

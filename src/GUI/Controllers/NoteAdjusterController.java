@@ -1,5 +1,6 @@
-package GUI;
+package GUI.Controllers;
 
+import GUI.Model;
 import Transposition.Note;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;

@@ -1,5 +1,6 @@
-package GUI;
+package GUI.Controllers;
 
+import GUI.Model;
 import java.awt.event.ActionEvent;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;

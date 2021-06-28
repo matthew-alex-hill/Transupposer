@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Controllers;
 
 public enum Option {
   CUSTOM_DIATONIC,

@@ -1,5 +1,7 @@
-package GUI;
+package GUI.Controllers;
 
+import GUI.Model;
+import GUI.ToggleablePanel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 

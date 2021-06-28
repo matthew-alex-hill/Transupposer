@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Controllers;
 
 public enum SequencerCommand {
   PLAY,
@@ -8,5 +8,6 @@ public enum SequencerCommand {
   REWIND,
   STEP_FORWARD,
   STEP_BACKWARD,
-  UPDATE
+  UPDATE,
+  SAVE
 }
