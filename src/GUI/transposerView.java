@@ -74,7 +74,7 @@ public class transposerView implements Updatable{
   private JCheckBox filesOnBox = new JCheckBox("View File Select", true);
   private JCheckBox rootsOnBox = new JCheckBox("View Root Setting", true);
   private JCheckBox playOnBox = new JCheckBox("View Midi Controls", true);
-  private JCheckBox customDiatonicBox, customChromaticBox;
+  private JCheckBox customDiatonicBox, customChromaticBox, autoUpdateBox, fileOutputBox;
   private ToggleablePanel filePanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel rootsPanel = new ToggleablePanel(new JPanel());
   private JPanel inputModePanel = new JPanel();
@@ -211,20 +211,28 @@ public class transposerView implements Updatable{
 
     customDiatonicBox = new JCheckBox("Diatonic Note Customisation", model.isUseCustomDiatonic());
     customChromaticBox = new JCheckBox("Chromatic Note Customisation", model.isUseCustomChromatic());
+    autoUpdateBox = new JCheckBox("Auto Update Transposer", model.isUseAutoUpdate());
+    fileOutputBox = new JCheckBox("Enable File Output", model.isUseFileOutput());
+
 
     //Setting up panel enable checkboxes
     filesOnBox.addItemListener(new PanelOnController(model, filePanel));
     rootsOnBox.addItemListener(new PanelOnController(model, rootsPanel));
     playOnBox.addItemListener(new PanelOnController(model, playPanel));
-    customDiatonicBox.addItemListener(new CustomScaleController(model, true));
-    customChromaticBox.addItemListener(new CustomScaleController(model, false));
+    customDiatonicBox.addItemListener(new BooleanOptionController(model, Option.CUSTOM_DIATONIC));
+    customChromaticBox.addItemListener(new BooleanOptionController(model, Option.CUSTOM_CHROMATIC));
+    autoUpdateBox.addItemListener(new BooleanOptionController(model, Option.AUTO_UPDATE));
+    fileOutputBox.addItemListener(new BooleanOptionController(model, Option.FILE_OUTPUT));
 
+    //Adding checkboxes to settings
     settingsPanel.add(settingsLabel);
     settingsPanel.add(filesOnBox);
     settingsPanel.add(rootsOnBox);
     settingsPanel.add(playOnBox);
     settingsPanel.add(customDiatonicBox);
     settingsPanel.add(customChromaticBox);
+    settingsPanel.add(autoUpdateBox);
+    settingsPanel.add(fileOutputBox);
 
     //gui panel given layout
     guiPanel.setLayout(new GridBagLayout());
@@ -375,9 +383,16 @@ public class transposerView implements Updatable{
       gridy++;
     }
 
-    placeInGrid(updateButton, guiPanel, 0, gridy, 1,1);
-    placeInGrid(transposeButton, guiPanel, 2, gridy++, 1, 1);
-    placeInGridFill(scroller, guiPanel, 0, gridy, 3,1, GridBagConstraints.BOTH);
+    if (!model.isUseAutoUpdate() && model.isUseFileOutput()) {
+      placeInGrid(updateButton, guiPanel, 0, gridy, 1, 1);
+      placeInGrid(transposeButton, guiPanel, 2, gridy++, 1, 1);
+    } else if (model.isUseFileOutput()) {
+      placeInGrid(transposeButton, guiPanel, 1, gridy++, 1, 1);
+    } else if (!model.isUseAutoUpdate()) {
+      placeInGrid(updateButton, guiPanel, 1, gridy++, 1, 1);
+    }
+
+    placeInGridFill(scroller, guiPanel, 0, gridy, 3,3, GridBagConstraints.BOTH);
 
     JPanel framePanel = new JPanel();
     framePanel.setLayout(new GridBagLayout());

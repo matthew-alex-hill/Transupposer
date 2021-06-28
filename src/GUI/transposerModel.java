@@ -24,6 +24,8 @@ public class transposerModel implements Model {
   private Sequencer sequencer;
   private boolean useCustomDiatonic;
   private boolean useCustomChromatic;
+  private boolean useAutoUpdate;
+  private boolean useFileOutput;
   private long microsecondPosition;
 
   public transposerModel() {
@@ -35,6 +37,8 @@ public class transposerModel implements Model {
     this.customIntervals = new HashMap<>();
     this.useCustomDiatonic = false;
     this.useCustomChromatic = false;
+    this.useAutoUpdate = false;
+    this.useFileOutput = true;
 
     this.inputFile = null;
     this.outputFile = null;
@@ -183,10 +187,18 @@ public class transposerModel implements Model {
     }
   }
 
+  private void autochangeTransposer() {
+    if (isUseAutoUpdate()) {
+      changeTransposer();
+    }
+  }
+
   @Override
   public void addCustomInterval(Note src, Note dst) {
     customIntervals.remove(src);
     customIntervals.put(src, dst);
+
+    autochangeTransposer();
   }
 
   @Override
@@ -204,6 +216,7 @@ public class transposerModel implements Model {
   @Override
   public void setInputMode(int inputMode) {
     this.inputMode = inputMode;
+    autochangeTransposer();
     updateObservers();
   }
 
@@ -216,6 +229,7 @@ public class transposerModel implements Model {
   public void setOutputMode(int outputMode) {
     this.outputMode = outputMode;
     clearCustomIntervals();
+    autochangeTransposer();
     updateObservers();
   }
 
@@ -232,6 +246,7 @@ public class transposerModel implements Model {
       this.inputRoot = inputRoot;
       statusBox.addStatus("Input root updated to " + inputRoot);
     }
+    autochangeTransposer();
     updateObservers();
   }
 
@@ -248,6 +263,7 @@ public class transposerModel implements Model {
       this.outputRoot = outputRoot;
       statusBox.addStatus("Output root updated to " + outputRoot);
     }
+    autochangeTransposer();
     clearCustomIntervals();
     updateObservers();
   }
@@ -311,6 +327,26 @@ public class transposerModel implements Model {
   @Override
   public void setUseCustomChromatic(boolean useCustomChromatic) {
     this.useCustomChromatic = useCustomChromatic;
+  }
+
+  @Override
+  public boolean isUseAutoUpdate() {
+    return useAutoUpdate;
+  }
+
+  @Override
+  public void setUseAutoUpdate(boolean useAutoUpdate) {
+    this.useAutoUpdate = useAutoUpdate;
+  }
+
+  @Override
+  public boolean isUseFileOutput() {
+    return useFileOutput;
+  }
+
+  @Override
+  public void setUseFileOutput(boolean useFileOutput) {
+    this.useFileOutput = useFileOutput;
   }
 
   @Override

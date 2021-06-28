@@ -83,6 +83,14 @@ public interface Model {
 
   void setUseCustomChromatic(boolean useCustomChromatic);
 
+  boolean isUseAutoUpdate();
+
+  void setUseAutoUpdate(boolean useAutoUpdate);
+
+  boolean isUseFileOutput();
+
+  void setUseFileOutput(boolean useFileOutput);
+
   /* Gets the status text field for the model */
   JTextArea getTextField();
 }
