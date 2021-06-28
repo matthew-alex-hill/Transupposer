@@ -102,6 +102,7 @@ public class transposerView implements Updatable{
 
     try {
       defaultSequencer = MidiSystem.getSequencer();
+      model.setSequencer(defaultSequencer);
     } catch (MidiUnavailableException e) {
       model.addStatus(e.getMessage() + ", midi playback will likely not work");
     }
@@ -121,7 +122,7 @@ public class transposerView implements Updatable{
     outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
 
     transposeButton.addActionListener(new transposeController(model));
-    updateButton.addActionListener(new transposerUpdateController(model, defaultSequencer));
+    updateButton.addActionListener(new SequencerController(model, SequencerCommand.UPDATE));
 
     //setting up midi playback buttons
     addSequencerController(playButton, SequencerCommand.PLAY, model, defaultSequencer);
@@ -148,10 +149,7 @@ public class transposerView implements Updatable{
       }
     }
 
-    SequencerSelectorController ssc = new SequencerSelectorController(model, sequencerSelector);
-    ssc.addUser((SequencerController) playButton.getActionListeners()[0]);
-    ssc.addUser((SequencerController) stopButton.getActionListeners()[0]);
-    sequencerSelector.addActionListener(ssc);
+    sequencerSelector.addActionListener(new SequencerSelectorController(model, sequencerSelector));
 
     //File choosers
     placeInGridAnchor(inputFileLabel, filePanel.getPanel(),0,0,1,1, GridBagConstraints.LINE_START);
@@ -238,7 +236,7 @@ public class transposerView implements Updatable{
 
   private void addSequencerController(JButton button, SequencerCommand command, Model model,
       Sequencer defaultSequencer) {
-    button.addActionListener(new SequencerController(model, defaultSequencer, command));
+    button.addActionListener(new SequencerController(model, command));
   }
 
   /* Sets up a slider with correct snapping, tick spacing and labels and gives them a change listener */

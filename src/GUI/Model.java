@@ -13,22 +13,22 @@ public interface Model {
   void transposeToFile();
 
   /* Runs transposer and plays resulting midi to supplied sequencer */
-  void transposeAndPlay(Sequencer sequencer);
+  void transposeAndPlay();
 
   /* Stops the provided sequencer from sending midi messages */
-  void stop(Sequencer sequencer);
+  void stop();
 
   /* Pauses playback of midi sequence */
-  void pause(Sequencer sequencer);
+  void pause();
 
   /* Updates transposer to current settings and resumes playback */
-  void changeTransposer(Sequencer sequencer);
+  void changeTransposer();
 
   /* Steps the sequencer playback by the given number of microseconds */
-  void step(Sequencer sequencer, long microseconds);
+  void step(long microseconds);
 
   /* Doubles or halves playback speed of sequencer playback */
-  void changeSpeed(Sequencer sequencer, boolean forwards);
+  void changeSpeed(boolean forwards);
 
   /* Sets the input file path to path */
   void setInputFile(String path);
@@ -68,6 +68,8 @@ public interface Model {
   String getInputFile();
 
   String getOutputFile();
+
+  void setSequencer(Sequencer sequencer);
 
   Note getCustomNote(Note src);
 

@@ -20,6 +20,8 @@ public class transposerModel implements Model {
   private int inputMode, outputMode;
   private Note inputRoot, outputRoot;
   private String inputFile, outputFile;
+
+  private Sequencer sequencer;
   private boolean useCustomDiatonic;
   private boolean useCustomChromatic;
   private long microsecondPosition;
@@ -112,7 +114,7 @@ public class transposerModel implements Model {
   }
 
   @Override
-  public void transposeAndPlay(Sequencer sequencer) {
+  public void transposeAndPlay() {
     TransposeTrack tt = getTransposeTrack();
 
     File input;
@@ -132,7 +134,7 @@ public class transposerModel implements Model {
   }
 
   @Override
-  public void stop(Sequencer sequencer) {
+  public void stop() {
     TransposeTrack tt = getTransposeTrack();
 
     try {
@@ -145,7 +147,7 @@ public class transposerModel implements Model {
   }
 
   @Override
-  public void pause(Sequencer sequencer) {
+  public void pause() {
     TransposeTrack tt = getTransposeTrack();
 
     try {
@@ -158,19 +160,19 @@ public class transposerModel implements Model {
   }
 
   @Override
-  public void changeTransposer(Sequencer sequencer) {
-    pause(sequencer);
-    transposeAndPlay(sequencer);
+  public void changeTransposer() {
+    pause();
+    transposeAndPlay();
   }
 
   @Override
-  public void step(Sequencer sequencer, long microseconds) {
+  public void step(long microseconds) {
     TransposeTrack tt = getTransposeTrack();
     tt.step(sequencer, microseconds);
   }
 
   @Override
-  public void changeSpeed(Sequencer sequencer, boolean forwards) {
+  public void changeSpeed(boolean forwards) {
     TransposeTrack tt = getTransposeTrack();
     tt.changeSpeed(sequencer, forwards);
   }
@@ -270,6 +272,15 @@ public class transposerModel implements Model {
   public void setOutputFile(String path) {
     outputFile = path;
     updateObservers();
+  }
+
+  @Override
+  public void setSequencer(Sequencer sequencer) {
+    if (this.sequencer != null && this.sequencer.isOpen()) {
+      this.sequencer.close();
+    }
+
+    this.sequencer = sequencer;
   }
 
   @Override

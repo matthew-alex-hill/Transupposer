@@ -1,8 +1,6 @@
 package GUI;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -11,19 +9,11 @@ import javax.swing.JComboBox;
 import javax.swing.event.ChangeEvent;
 
 public class SequencerSelectorController extends Controller {
-
-  private final List<SequencerController> users;
   private final JComboBox<String> selector;
 
   public SequencerSelectorController(Model transposerModel, JComboBox<String> selector) {
     super(transposerModel);
     this.selector = selector;
-    this.users = new ArrayList<>();
-  }
-
-  /* Adds a user to the users list */
-  public void addUser(SequencerController user) {
-    users.add(user);
   }
 
   //Updates all users to selected sequencer when sequencer selected
@@ -49,9 +39,7 @@ public class SequencerSelectorController extends Controller {
     }
 
     if (sequencer != null) {
-      for (SequencerController controller : users) {
-        controller.setSequencer(sequencer);
-      }
+      transposerModel.setSequencer(sequencer);
       transposerModel.addStatus("Sequencer Updated to " + name);
     }
   }

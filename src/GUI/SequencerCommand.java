@@ -7,5 +7,6 @@ public enum SequencerCommand {
   FAST_FORWARD,
   REWIND,
   STEP_FORWARD,
-  STEP_BACKWARD
+  STEP_BACKWARD,
+  UPDATE
 }
