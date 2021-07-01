@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Transmitter;
 import javax.swing.JTextArea;
 
 public class transposerModel implements Model {
@@ -21,7 +23,8 @@ public class transposerModel implements Model {
   private Note inputRoot, outputRoot;
   private String inputFile, outputFile;
 
-  private Sequencer sequencer;
+  private Sequencer sequencer = null;
+  private Transmitter transmitter= null;
   private boolean useCustomDiatonic;
   private boolean useCustomChromatic;
   private boolean useAutoUpdate;
@@ -89,7 +92,7 @@ public class transposerModel implements Model {
     file = new File(path);
 
     if (file == null) {
-      addStatus("Invalid FIle Path: " + path);
+      addStatus("Invalid File Path: " + path);
     }
 
     return file;
@@ -130,7 +133,9 @@ public class transposerModel implements Model {
 
     try {
       tt.transposeAndPlay(input, sequencer);
-      sequencer.setMicrosecondPosition(microsecondPosition);
+      if (microsecondPosition < sequencer.getSequence().getMicrosecondLength()) {
+        sequencer.setMicrosecondPosition(microsecondPosition);
+      }
       addStatus("Playing transposed Midi from " + inputFile);
     } catch (TranspositionException e) {
       addStatus(e.getMessage());
@@ -297,6 +302,20 @@ public class transposerModel implements Model {
     }
 
     this.sequencer = sequencer;
+  }
+
+  @Override
+  public void setTransmitter(Transmitter transmitter) {
+    if (this.transmitter != null) {
+      transmitter.close();
+    }
+
+    this.transmitter = transmitter;
+    try {
+      this.transmitter.setReceiver(sequencer.getReceiver());
+    } catch (MidiUnavailableException e) {
+      addStatus("Error trying to get receiver: " + e.getMessage());
+    }
   }
 
   @Override

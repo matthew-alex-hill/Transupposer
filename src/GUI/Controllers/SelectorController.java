@@ -6,15 +6,19 @@ import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Transmitter;
 import javax.swing.JComboBox;
 import javax.swing.event.ChangeEvent;
 
-public class SequencerSelectorController extends Controller {
+public class SelectorController extends Controller {
   private final JComboBox<String> selector;
+  private final Device deviceType;
 
-  public SequencerSelectorController(Model transposerModel, JComboBox<String> selector) {
+  public SelectorController(Model transposerModel, JComboBox<String> selector,
+      Device deviceType) {
     super(transposerModel);
     this.selector = selector;
+    this.deviceType = deviceType;
   }
 
   //Updates all users to selected sequencer when sequencer selected
@@ -23,6 +27,7 @@ public class SequencerSelectorController extends Controller {
     String name = (String) selector.getSelectedItem();
 
     Sequencer sequencer = null;
+    Transmitter transmitter = null;
 
     MidiDevice device;
     MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
@@ -32,7 +37,11 @@ public class SequencerSelectorController extends Controller {
 
         if (device.getDeviceInfo().getName().equals(name)) {
           //TODO: This line does not create a valid sequencer
-          sequencer = (Sequencer) device;
+          if (deviceType == Device.SEQUENCER) {
+            sequencer = (Sequencer) device;
+          } else if (deviceType  == Device.TRANSMITTER) {
+            transmitter = device.getTransmitter();
+          }
         }
       } catch (MidiUnavailableException e) {
         transposerModel.addStatus("Cannot locate device " + name);
@@ -43,6 +52,12 @@ public class SequencerSelectorController extends Controller {
       transposerModel.setSequencer(sequencer);
       transposerModel.addStatus("Sequencer Updated to " + name);
     }
+
+    if (transmitter != null) {
+      transposerModel.setTransmitter(transmitter);
+      transposerModel.addStatus("Midi Input Updated to " + name);
+    }
+
   }
 
   //Unused, does nothing as a change listener

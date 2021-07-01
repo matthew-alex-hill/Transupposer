@@ -1,12 +1,14 @@
 package GUI;
 
 import GUI.Controllers.BooleanOptionController;
+import GUI.Controllers.Device;
 import GUI.Controllers.FileOpenController;
 import GUI.Controllers.Option;
 import GUI.Controllers.PanelOnController;
+import GUI.Controllers.SequencerCloser;
 import GUI.Controllers.SequencerCommand;
 import GUI.Controllers.SequencerController;
-import GUI.Controllers.SequencerSelectorController;
+import GUI.Controllers.SelectorController;
 import GUI.Controllers.SliderController;
 import GUI.Controllers.SubmitController;
 import Transposition.Note;
@@ -21,9 +23,11 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiDevice.Info;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Transmitter;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -80,12 +84,15 @@ public class transposerView implements Updatable{
   private JButton stepForwardButton = new JButton("➡️");
   private JButton stepBackwardButton = new JButton("⬅️");
   private JComboBox<String> sequencerSelector = new JComboBox<>();
+  private JComboBox<String> transmitterSelector = new JComboBox<>();
   private JCheckBox filesOnBox = new JCheckBox("View File Select", true);
   private JCheckBox rootsOnBox = new JCheckBox("View Root Setting", true);
   private JCheckBox playOnBox = new JCheckBox("View Midi Controls", true);
+  private JCheckBox selectorsOnBox = new JCheckBox("View Midi Connections", true);
   private JCheckBox customDiatonicBox, customChromaticBox, autoUpdateBox, fileOutputBox;
   private ToggleablePanel filePanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel rootsPanel = new ToggleablePanel(new JPanel());
+  private ToggleablePanel selectorPanel = new ToggleablePanel(new JPanel());
   private JPanel inputModePanel = new JPanel();
   private JPanel outputModePanel = new JPanel();
   private ToggleablePanel playPanel = new ToggleablePanel(new JPanel());
@@ -142,23 +149,19 @@ public class transposerView implements Updatable{
     addSequencerController(stepForwardButton, SequencerCommand.STEP_FORWARD, model, defaultSequencer);
     addSequencerController(stepBackwardButton, SequencerCommand.STEP_BACKWARD, model, defaultSequencer);
 
-    //Setting up sequencer selector
+    //Setting up selectors
     List<String> sequencers = new ArrayList<>();
     MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-    MidiDevice device;
 
-    for (int i = 0; i < infos.length; i++) {
-      try {
-        device = MidiSystem.getMidiDevice(infos[i]);
-        if (device instanceof Sequencer) {
-          sequencerSelector.addItem(device.getDeviceInfo().getName());
-        }
-      } catch (MidiUnavailableException e) {
-        model.addStatus(e.getMessage());
-      }
-    }
+    setUpSelector(model, infos, Device.SEQUENCER, sequencerSelector);
+    sequencerSelector.addActionListener(new SelectorController(model, sequencerSelector,
+        Device.SEQUENCER));
 
-    sequencerSelector.addActionListener(new SequencerSelectorController(model, sequencerSelector));
+    setUpSelector(model, infos, Device.TRANSMITTER, transmitterSelector);
+    transmitterSelector.addActionListener(new SelectorController(model, transmitterSelector, Device.TRANSMITTER));
+
+    selectorPanel.add(sequencerSelector);
+    selectorPanel.add(transmitterSelector);
 
     //File choosers
     placeInGridAnchor(inputFileLabel, filePanel.getPanel(),0,0,1,1, GridBagConstraints.LINE_START);
@@ -227,6 +230,7 @@ public class transposerView implements Updatable{
     //Setting up panel enable checkboxes
     filesOnBox.addItemListener(new PanelOnController(model, filePanel));
     rootsOnBox.addItemListener(new PanelOnController(model, rootsPanel));
+    selectorsOnBox.addItemListener(new PanelOnController(model, selectorPanel));
     playOnBox.addItemListener(new PanelOnController(model, playPanel));
     customDiatonicBox.addItemListener(new BooleanOptionController(model, Option.CUSTOM_DIATONIC));
     customChromaticBox.addItemListener(new BooleanOptionController(model, Option.CUSTOM_CHROMATIC));
@@ -237,6 +241,7 @@ public class transposerView implements Updatable{
     settingsPanel.add(settingsLabel);
     settingsPanel.add(filesOnBox);
     settingsPanel.add(rootsOnBox);
+    //settingsPanel.add(selectorsOnBox);
     settingsPanel.add(playOnBox);
     settingsPanel.add(customDiatonicBox);
     settingsPanel.add(customChromaticBox);
@@ -247,8 +252,26 @@ public class transposerView implements Updatable{
     guiPanel.setLayout(new GridBagLayout());
 
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    frame.addWindowListener(new SequencerCloser(model));
     frame.setVisible(true);
     update(model);
+  }
+
+  private void setUpSelector(Model model, Info[] infos, Device deviceType,
+      JComboBox<String> selector) {
+    MidiDevice device;
+
+    for (int i = 0; i < infos.length; i++) {
+      try {
+        device = MidiSystem.getMidiDevice(infos[i]);
+        if ((deviceType == Device.SEQUENCER && device instanceof Sequencer) ||
+            (deviceType == Device.TRANSMITTER && device.getTransmitters().size() >= 0)) {
+          selector.addItem(device.getDeviceInfo().getName());
+        }
+      } catch (MidiUnavailableException e) {
+        model.addStatus(e.getMessage());
+      }
+    }
   }
 
   private void addSequencerController(JButton button, SequencerCommand command, Model model,
@@ -340,6 +363,14 @@ public class transposerView implements Updatable{
       placeInGridFill(rootsPanel.getPanel(), guiPanel, 0, gridy, 3, 2, GridBagConstraints.HORIZONTAL);
       gridy += 2;
     }
+
+    //TODO: Get selectors working properly
+    /*
+    if (selectorPanel.isVisibile()) {
+      placeInGridAnchor(selectorPanel.getPanel(), guiPanel, 0, gridy++, 3, 1, GridBagConstraints.CENTER);
+    }
+    */
+
 
     placeInGridFill(inputModePanel, guiPanel, 0, gridy, 3, 3, GridBagConstraints.HORIZONTAL);
     gridy += 3;

@@ -61,7 +61,7 @@ public class TransposeTrack {
       if (!transposer.containsInterval(tmp)) {
         throw new TranspositionException("Note " + tmp + " not found in transpose map");
       }
-      transposer.addOctaveIfNeeded(i, transposeNote(tmp).getNoteNumber(),
+      transposer.addOctaveIfNeeded(transposeNote(tmp).getNoteNumber(), i,
           outputRoot.getNoteNumber() - inputRoot.getNoteNumber());
     }
   }
@@ -160,6 +160,7 @@ public class TransposeTrack {
 
     try {
       if (!sequencer.isOpen()) {
+        System.out.println("Opening sequencer " + sequencer.getDeviceInfo().getName());
         sequencer.open();
       }
       sequencer.setLoopCount(0);

@@ -2,6 +2,7 @@ package GUI;
 
 import Transposition.Note;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Transmitter;
 import javax.swing.JTextArea;
 
 public interface Model {
@@ -70,6 +71,8 @@ public interface Model {
   String getOutputFile();
 
   void setSequencer(Sequencer sequencer);
+
+  void setTransmitter(Transmitter transmitter);
 
   Note getCustomNote(Note src);
 
