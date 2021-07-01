@@ -1,6 +1,8 @@
 package GUI;
 
 import Transposition.Note;
+import Transposition.TransposeMap;
+import Transposition.TransposeStamp;
 import Transposition.TransposeTrack;
 import Transposition.Transposer;
 import Transposition.TranspositionException;
@@ -22,6 +24,7 @@ public class transposerModel implements Model {
   private int inputMode, outputMode;
   private Note inputRoot, outputRoot;
   private String inputFile, outputFile;
+  private List<TransposeStamp> stamps;
 
   private Sequencer sequencer = null;
   private Transmitter transmitter= null;
@@ -29,7 +32,8 @@ public class transposerModel implements Model {
   private boolean useCustomChromatic;
   private boolean useAutoUpdate;
   private boolean useFileOutput;
-  private long microsecondPosition;
+  private boolean recording;
+  private long tickPosition;
 
   public transposerModel() {
     this.views = new ArrayList<>();
@@ -42,6 +46,7 @@ public class transposerModel implements Model {
     this.useCustomChromatic = false;
     this.useAutoUpdate = false;
     this.useFileOutput = true;
+    this.recording = false;
 
     this.inputFile = null;
     this.outputFile = null;
@@ -113,8 +118,13 @@ public class transposerModel implements Model {
     TransposeTrack tt = getTransposeTrack();
 
     try {
-      tt.transposeToFile(input, output);
-      addStatus("Transposed file created at " + outputFile);
+      if (recording) {
+        tt.transposeToFile(input, output, stamps);
+        addStatus("Saved recording to " + outputFile);
+      } else {
+        tt.transposeToFile(input, output);
+        addStatus("Transposed file created at " + outputFile);
+      }
     } catch (TranspositionException e) {
       addStatus(e.getMessage());
     }
@@ -133,13 +143,32 @@ public class transposerModel implements Model {
 
     try {
       tt.transposeAndPlay(input, sequencer);
-      if (microsecondPosition < sequencer.getSequence().getMicrosecondLength()) {
-        sequencer.setMicrosecondPosition(microsecondPosition);
+
+      logTransposerChange(tt.getTransposer());
+
+      if (tickPosition < sequencer.getSequence().getMicrosecondLength()) {
+        sequencer.setTickPosition(tickPosition);
+        tt.setTickPosition(tickPosition);
       }
       addStatus("Playing transposed Midi from " + inputFile);
     } catch (TranspositionException e) {
       addStatus(e.getMessage());
     }
+  }
+
+  private void logTransposerChange(TransposeMap transposer) {
+    if (recording) {
+      addStatus("Transposer change logged at " + tickPosition);
+      stamps.add(0, new TransposeStamp(transposer, tickPosition));
+    }
+  }
+
+  @Override
+  public void record() {
+    //TODO: Add way of saving recording if song finishes without stop being pressed
+    recording = true;
+    stamps = new ArrayList<>();
+    transposeAndPlay();
   }
 
   @Override
@@ -148,8 +177,11 @@ public class transposerModel implements Model {
 
     try {
       tt.stop(sequencer);
+      if (recording) {
+        transposeToFile();
+      }
       addStatus("Stopped sequencer output");
-      microsecondPosition = 0;
+      tickPosition = 0;
     } catch (TranspositionException e) {
       addStatus(e.getMessage());
     }
@@ -165,7 +197,7 @@ public class transposerModel implements Model {
       addStatus(e.getMessage());
     }
 
-    microsecondPosition = tt.getMicrosecondPosition();
+    tickPosition = tt.getTickPosition();
   }
 
   @Override
@@ -366,6 +398,11 @@ public class transposerModel implements Model {
   @Override
   public void setUseFileOutput(boolean useFileOutput) {
     this.useFileOutput = useFileOutput;
+  }
+
+  @Override
+  public boolean isRecording() {
+    return recording;
   }
 
   @Override

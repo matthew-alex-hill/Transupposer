@@ -16,6 +16,9 @@ public interface Model {
   /* Runs transposer and plays resulting midi to supplied sequencer */
   void transposeAndPlay();
 
+  //Creates a new list of transpose intervals and time stamps and plays midi file to record changes into list
+  void record();
+
   /* Stops the provided sequencer from sending midi messages */
   void stop();
 
@@ -93,6 +96,8 @@ public interface Model {
   boolean isUseFileOutput();
 
   void setUseFileOutput(boolean useFileOutput);
+
+  boolean isRecording();
 
   /* Gets the status text field for the model */
   JTextArea getTextField();

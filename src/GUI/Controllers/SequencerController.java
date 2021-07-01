@@ -43,7 +43,13 @@ public class SequencerController extends Controller {
         transposerModel.changeTransposer();
         break;
       case SAVE:
-        transposerModel.transposeToFile();
+        //Does not write to file if a recording is in process
+        if (!transposerModel.isRecording()) {
+          transposerModel.transposeToFile();
+        }
+        break;
+      case RECORD:
+        transposerModel.record();
         break;
     }
   }

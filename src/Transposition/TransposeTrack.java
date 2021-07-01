@@ -2,7 +2,9 @@ package Transposition;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
@@ -34,7 +36,7 @@ public class TransposeTrack {
   private Note inputRoot;
   private Note outputRoot;
 
-  private long microsecondPosition = 0;
+  private long tickPosition = 0;
 
   //Creates new transpose map with roots and modes
   public TransposeTrack(Note inputRoot, int inputMode,
@@ -125,6 +127,10 @@ public class TransposeTrack {
     }
   }
 
+  public TransposeMap getTransposer() {
+    return transposer;
+  }
+
   /* Transposes a single note and returns the result */
   public Note transposeNote(Note note) {
     return new Note(transposer.transpose(note.getNoteNumber()));
@@ -136,6 +142,20 @@ public class TransposeTrack {
      Throws a transposition exception in the case of any errors */
   public void transposeToFile(File inputFile, File outputFile) throws TranspositionException {
     Sequence outputSequence = transposeFile(inputFile);
+
+    try {
+      MidiSystem.write(outputSequence, 1, outputFile);
+    } catch (IOException e) {
+      throw new TranspositionException("Midi Write Error: " + e.getMessage());
+    }
+  }
+
+  /* Takes midi sequence from an inputFile and a list of transposers and timestamps
+     Transposes all note on / note off events using latest transposer timestamp after the microsecond position
+     Writes transposed notes into outputFile
+     Throws a transposition exception in the case of any errors */
+  public void transposeToFile(File inputFile, File outputFile, List<TransposeStamp> stamps) throws TranspositionException {
+    Sequence outputSequence = transposeFile(inputFile, stamps);
 
     try {
       MidiSystem.write(outputSequence, 1, outputFile);
@@ -184,7 +204,7 @@ public class TransposeTrack {
 
   /* Stops a playing sequence and stores the current position, throws an exception if it cannot be stopped */
   public void pause(Sequencer sequencer) throws TranspositionException {
-    microsecondPosition = sequencer.getMicrosecondPosition();
+    tickPosition = sequencer.getTickPosition();
     stop(sequencer);
   }
 
@@ -210,18 +230,32 @@ public class TransposeTrack {
     sequencer.setTempoFactor((float) Math.pow(2, newTempoFac));
   }
 
-  public long getMicrosecondPosition() {
-    return microsecondPosition;
+  public long getTickPosition() {
+    return tickPosition;
   }
 
-  public void setMicrosecondPosition(long microsecondPosition) {
-    this.microsecondPosition = microsecondPosition;
+  public void setTickPosition(long tickPosition) {
+    this.tickPosition = tickPosition;
   }
 
   /* Takes in a file and generates a transposed sequence from it
    *  Returns the sequence or null if an error occurs
    *  Errors include invalid midi messages in a file, invalid file type or IO exceptions */
   private Sequence transposeFile(File inputFile) throws TranspositionException {
+    List<TransposeStamp> stamps = new ArrayList<>();
+    stamps.add(new TransposeStamp(transposer, 0));
+    return getFileSequence(inputFile, stamps);
+  }
+
+  /* Takes in a file and a list of transposers at timestamps and generates a transposed sequence from them
+   *  Returns the sequence or null if an error occurs
+   *  Errors include invalid midi messages in a file, invalid file type or IO exceptions */
+  private Sequence transposeFile(File inputFile, List<TransposeStamp> stamps) throws TranspositionException {
+    return getFileSequence(inputFile, stamps);
+  }
+
+  private Sequence getFileSequence(File inputFile, List<TransposeStamp> stamps)
+      throws TranspositionException {
     try {
       Sequence inputSequence = MidiSystem.getSequence(inputFile);
       Track[] tracks = inputSequence.getTracks();
@@ -229,8 +263,7 @@ public class TransposeTrack {
       Sequence outputSequence = new Sequence(inputSequence.getDivisionType(),
           inputSequence.getResolution(),
           tracks.length);
-
-      transposeAll(tracks, outputSequence);
+      transposeAll(tracks, outputSequence, stamps);
       return outputSequence;
 
     } catch (InvalidMidiDataException | IOException e) {
@@ -238,15 +271,16 @@ public class TransposeTrack {
     }
   }
 
+
   /* Transposes all notes in a list of tracks and adds them to a sequence
    *  Returns 0 if successful, -1 if an error occured */
-  private void transposeAll(Track[] tracks, Sequence outputSequence) throws TranspositionException {
+  private void transposeAll(Track[] tracks, Sequence outputSequence, List<TransposeStamp> stamps) throws TranspositionException {
     Track tmpTrack;
     MidiEvent tmpEvent;
     MidiMessage tmpMessage;
+    TransposeMap tmpMap;
     ShortMessage shortMessage;
     int messageType;
-
     Set<Integer> drumChannels = new HashSet<>();
 
     //for each event in each track add either the event or a new event with transposed frequency
@@ -269,11 +303,16 @@ public class TransposeTrack {
           } else {
             //adds the transposed version of the note as a new event and fails if this cannot be created
             try {
-              tmpTrack.add(new MidiEvent(
-                  new ShortMessage(tmpMessage.getStatus(),
-                      transposer.transpose(shortMessage.getData1()),
-                      shortMessage.getData2()),
-                  tmpEvent.getTick()));
+              tmpMap = getTrackAtTime(stamps, tmpEvent.getTick());
+              if (tmpMap != null) {
+                tmpTrack.add(new MidiEvent(
+                    new ShortMessage(tmpMessage.getStatus(),
+                        tmpMap.transpose(shortMessage.getData1()),
+                        shortMessage.getData2()),
+                    tmpEvent.getTick()));
+              } else {
+                throw new TranspositionException("No transposer found for tick " + tmpEvent.getTick());
+              }
             } catch (InvalidMidiDataException e) {
               e.printStackTrace();
 
@@ -301,5 +340,17 @@ public class TransposeTrack {
         }
       }
     }
+  }
+
+  //Gets current transposer given a list of stamped TransposeMaps in reverse order
+  private static TransposeMap getTrackAtTime(List<TransposeStamp> stamps, long tickPosition) {
+    TransposeStamp stamp;
+    for (int i = 0; i < stamps.size(); i++) {
+      stamp = stamps.get(i);
+      if (tickPosition >= stamp.getTickPosition()) {
+        return stamp.getTransposer();
+      }
+    }
+    return null;
   }
 }

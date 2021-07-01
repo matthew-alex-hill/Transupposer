@@ -76,6 +76,7 @@ public class transposerView implements Updatable{
   private String brightestLabel = "Bright";
   private JButton updateButton = new JButton("Update Scales");
   private JButton transposeButton = new JButton("Transpose to File");
+  private JButton recordButton = new JButton("Record to File");
   private JButton playButton = new JButton("▶️︎");
   private JButton stopButton = new JButton("◼︎");
   private JButton pauseButton = new JButton("⏐⏐");
@@ -139,6 +140,7 @@ public class transposerView implements Updatable{
 
     transposeButton.addActionListener(new SequencerController(model, SequencerCommand.SAVE));
     updateButton.addActionListener(new SequencerController(model, SequencerCommand.UPDATE));
+    recordButton.addActionListener(new SequencerController(model, SequencerCommand.RECORD));
 
     //setting up midi playback buttons
     addSequencerController(playButton, SequencerCommand.PLAY, model, defaultSequencer);
@@ -425,9 +427,13 @@ public class transposerView implements Updatable{
 
     if (!model.isUseAutoUpdate() && model.isUseFileOutput()) {
       placeInGrid(updateButton, guiPanel, 0, gridy, 1, 1);
-      placeInGrid(transposeButton, guiPanel, 2, gridy++, 1, 1);
+      placeInGrid(transposeButton, guiPanel, 1, gridy, 1, 1);
+      placeInGrid(recordButton, guiPanel, 2, gridy++, 1, 1);
+
     } else if (model.isUseFileOutput()) {
-      placeInGrid(transposeButton, guiPanel, 1, gridy++, 1, 1);
+      placeInGrid(transposeButton, guiPanel, 0, gridy, 1, 1);
+      placeInGrid(recordButton, guiPanel, 2, gridy++, 1, 1);
+
     } else if (!model.isUseAutoUpdate()) {
       placeInGrid(updateButton, guiPanel, 1, gridy++, 1, 1);
     }

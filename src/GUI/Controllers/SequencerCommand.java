@@ -9,5 +9,6 @@ public enum SequencerCommand {
   STEP_FORWARD,
   STEP_BACKWARD,
   UPDATE,
-  SAVE
+  SAVE,
+  RECORD
 }
