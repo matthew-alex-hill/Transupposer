@@ -178,6 +178,7 @@ public class transposerModel implements Model {
     try {
       tt.stop(sequencer);
       if (recording) {
+        recording = false;
         transposeToFile();
       }
       addStatus("Stopped sequencer output");

@@ -276,15 +276,18 @@ public class TransposeTrack {
    *  Returns 0 if successful, -1 if an error occured */
   private void transposeAll(Track[] tracks, Sequence outputSequence, List<TransposeStamp> stamps) throws TranspositionException {
     Track tmpTrack;
-    MidiEvent tmpEvent;
-    MidiMessage tmpMessage;
+    MidiEvent tmpEvent, noteOffEvent;
+    MidiMessage tmpMessage, noteOffMessage;
     TransposeMap tmpMap;
-    ShortMessage shortMessage;
+    ShortMessage shortMessage, shortNoteOffMessage;
     int messageType;
+    boolean noteOffFound;
+
     Set<Integer> drumChannels = new HashSet<>();
 
     //for each event in each track add either the event or a new event with transposed frequency
     for (Track track : tracks) {
+
       tmpTrack = outputSequence.createTrack();
       for (int i = 0; i < track.size(); i++) {
         tmpEvent = track.get(i);
@@ -292,8 +295,8 @@ public class TransposeTrack {
 
         messageType = tmpMessage.getStatus() & messageMask;
 
-        //If event is a note on/off message modify the note frequency, else add the event as is
-        if (messageType == ShortMessage.NOTE_OFF || messageType == ShortMessage.NOTE_ON) {
+        //If event is a note on message modify the note frequency, else add the event as is
+        if (messageType == ShortMessage.NOTE_ON) {
 
           shortMessage = (ShortMessage) tmpMessage;
 
@@ -310,6 +313,31 @@ public class TransposeTrack {
                         tmpMap.transpose(shortMessage.getData1()),
                         shortMessage.getData2()),
                     tmpEvent.getTick()));
+
+                noteOffFound = false;
+                //searches for a corresponding note off after this note on and adds it transposed to the same note
+                for (int j = i; j < track.size() && !noteOffFound; j++) {
+                  noteOffEvent = track.get(j);
+                  noteOffMessage = noteOffEvent.getMessage();
+
+                  messageType = noteOffMessage.getStatus() & messageMask;
+                  if (messageType == ShortMessage.NOTE_OFF) {
+                    shortNoteOffMessage = (ShortMessage) noteOffMessage;
+
+                    if (shortMessage.getChannel() == shortNoteOffMessage.getChannel()
+                        && shortMessage.getData1() == shortNoteOffMessage.getData1()) {
+                      tmpTrack.add(new MidiEvent(
+                          new ShortMessage(shortNoteOffMessage.getStatus(),
+                              tmpMap.transpose(shortNoteOffMessage.getData1()),
+                              shortNoteOffMessage.getData2()),
+                          noteOffEvent.getTick()));
+                          noteOffFound = true;
+                    }
+                  }
+                }
+                if (!noteOffFound) {
+                  System.out.println("Couldn't find a note off for " + shortMessage.getData1() + " at " + tmpEvent.getTick());
+                }
               } else {
                 throw new TranspositionException("No transposer found for tick " + tmpEvent.getTick());
               }
@@ -324,19 +352,23 @@ public class TransposeTrack {
           }
 
         } else {
-          //if we are changing to a drum program, put the channel in the do not transpose list
-          if (messageType == ShortMessage.PROGRAM_CHANGE) {
-            shortMessage = (ShortMessage) tmpMessage;
-            if (shortMessage.getData1() >= percussiveMin
-                || shortMessage.getChannel() == drumChannel) {
-              drumChannels.add(shortMessage.getChannel());
-            } else {
-              //remove from the do not transpose list if we are changing to a melodic program
-              drumChannels.remove(shortMessage.getChannel());
+          //Note off messages are handled by the note on case so don't need to be added again
+          if (messageType != ShortMessage.NOTE_OFF) {
+            //if we are changing to a drum program, put the channel in the do not transpose list
+            if (messageType == ShortMessage.PROGRAM_CHANGE) {
+              shortMessage = (ShortMessage) tmpMessage;
+              if (shortMessage.getData1() >= percussiveMin
+                  || shortMessage.getChannel() == drumChannel) {
+                drumChannels.add(shortMessage.getChannel());
+                System.out.println("Channel " + shortMessage.getChannel() + " is now a drum");
+              } else {
+                //remove from the do not transpose list if we are changing to a melodic program
+                drumChannels.remove(shortMessage.getChannel());
+              }
             }
-          }
 
-          tmpTrack.add(tmpEvent);
+            tmpTrack.add(tmpEvent);
+          }
         }
       }
     }

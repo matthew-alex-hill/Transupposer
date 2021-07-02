@@ -104,5 +104,12 @@ public class Transposer implements TransposeMap {
     if (interval < 0 && noteValue % 12 > mapKey % 12) {
       addOctaveChangeIfAbsent(new Note(mapKey), -1);
     }
+    if (interval == 0) {
+      if (noteValue - mapKey > 2) {
+        addOctaveChangeIfAbsent(new Note(mapKey), -1);
+      } else if (noteValue - mapKey < -2) {
+        addOctaveChangeIfAbsent(new Note(mapKey), 1);
+      }
+    }
   }
 }
