@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
 import javax.sound.midi.Transmitter;
 import javax.swing.JTextArea;
 
@@ -27,7 +29,8 @@ public class transposerModel implements Model {
   private List<TransposeStamp> stamps;
 
   private Sequencer sequencer = null;
-  private Transmitter transmitter= null;
+  private Transmitter transmitter = null;
+  private Synthesizer synthesizer = null;
   private boolean useCustomDiatonic;
   private boolean useCustomChromatic;
   private boolean useAutoUpdate;
@@ -51,6 +54,16 @@ public class transposerModel implements Model {
     this.inputFile = null;
     this.outputFile = null;
     this.statusBox = new StatusBox();
+
+    //setting up midi sequencer
+    try {
+      this.sequencer = MidiSystem.getSequencer();
+      if (!sequencer.isOpen()) {
+        sequencer.open();
+      }
+    } catch (MidiUnavailableException e) {
+      addStatus(e.getMessage() + ", midi playback will likely not work");
+    }
   }
 
   /* Adds a view to the views list */
@@ -141,7 +154,16 @@ public class transposerModel implements Model {
       return;
     }
 
+    if (synthesizer == null) {
+      addStatus("No synthesizer selected for playback");
+      return;
+    }
+
     try {
+      if (transmitter != null) {
+        tt.setRecording(true);
+      }
+
       tt.transposeAndPlay(input, sequencer);
 
       logTransposerChange(tt.getTransposer());
@@ -175,11 +197,16 @@ public class transposerModel implements Model {
   public void stop() {
     TransposeTrack tt = getTransposeTrack();
 
+    if (synthesizer == null) {
+      addStatus("No synthesizer selected for playback");
+      return;
+    }
+
     try {
       tt.stop(sequencer);
       if (recording) {
-        recording = false;
         transposeToFile();
+        recording = false;
       }
       addStatus("Stopped sequencer output");
       tickPosition = 0;
@@ -191,6 +218,11 @@ public class transposerModel implements Model {
   @Override
   public void pause() {
     TransposeTrack tt = getTransposeTrack();
+
+    if (synthesizer == null) {
+      addStatus("No synthesizer selected for playback");
+      return;
+    }
 
     try {
       tt.pause(sequencer);
@@ -329,12 +361,31 @@ public class transposerModel implements Model {
   }
 
   @Override
-  public void setSequencer(Sequencer sequencer) {
-    if (this.sequencer != null && this.sequencer.isOpen()) {
-      this.sequencer.close();
+  public void setSynthesizer(Synthesizer synthesizer) {
+    /* TODO: Closing synth here causes a runtime exception next time it is used
+    if (this.synthesizer != null && this.synthesizer.isOpen()) {
+      this.synthesizer.close();
+    }
+    */
+
+    this.synthesizer = synthesizer;
+
+    //Opens synth and sets relevant receivers to new synth
+    try {
+      if (synthesizer != null && !synthesizer.isOpen()) {
+        synthesizer.open();
+        this.sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
+        if (this.transmitter != null) {
+          this.transmitter.setReceiver(synthesizer.getReceiver());
+        }
+      } else if (this.transmitter != null) {
+        transmitter.setReceiver(null);
+      }
+    } catch (MidiUnavailableException e) {
+      addStatus("Error updating synthesizer: " + e.getMessage());
     }
 
-    this.sequencer = sequencer;
+
   }
 
   @Override
@@ -344,10 +395,15 @@ public class transposerModel implements Model {
     }
 
     this.transmitter = transmitter;
+
     try {
-      this.transmitter.setReceiver(sequencer.getReceiver());
+      //Establishes a new transposed receiver which transposes note on/off messages and sends all others
+      if (this.transmitter != null && this.synthesizer != null) {
+        this.transmitter.setReceiver(
+            new transposeReceiver(this, getTransposeTrack(), synthesizer.getReceiver()));
+      }
     } catch (MidiUnavailableException e) {
-      addStatus("Error trying to get receiver: " + e.getMessage());
+      addStatus("Error updating transmitter: " + e.getMessage());
     }
   }
 

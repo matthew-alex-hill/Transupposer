@@ -1,7 +1,7 @@
 package GUI;
 
 import Transposition.Note;
-import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
 import javax.sound.midi.Transmitter;
 import javax.swing.JTextArea;
 
@@ -73,7 +73,7 @@ public interface Model {
 
   String getOutputFile();
 
-  void setSequencer(Sequencer sequencer);
+  void setSynthesizer(Synthesizer synthesizer);
 
   void setTransmitter(Transmitter transmitter);
 

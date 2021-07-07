@@ -22,9 +22,9 @@ import javax.sound.midi.Track;
 public class TransposeTrack {
 
 
-  private static final int messageMask = 240;
-  private static final int drumChannel = 9;
-  private static final int percussiveMin = 113;
+  public static final int messageMask = 240;
+  public static final int drumChannel = 9;
+  public static final int percussiveMin = 113;
 
   private TransposeMap transposer;
 
@@ -37,6 +37,7 @@ public class TransposeTrack {
   private Note outputRoot;
 
   private long tickPosition = 0;
+  private boolean recording = false;
 
   //Creates new transpose map with roots and modes
   public TransposeTrack(Note inputRoot, int inputMode,
@@ -183,9 +184,16 @@ public class TransposeTrack {
         System.out.println("Opening sequencer " + sequencer.getDeviceInfo().getName());
         sequencer.open();
       }
+
       sequencer.setLoopCount(0);
       sequencer.setTempoFactor(1);
-      sequencer.start();
+
+      if (recording) {
+        sequencer.recordEnable(sequencer.getSequence().createTrack(), -1);
+        sequencer.startRecording();
+      } else {
+        sequencer.start();
+      }
     } catch (MidiUnavailableException e) {
       throw new TranspositionException(e.getMessage());
     }
@@ -196,7 +204,6 @@ public class TransposeTrack {
 
     try {
       sequencer.stop();
-      sequencer.close();
     } catch (IllegalStateException e) {
       throw new TranspositionException(e.getMessage());
     }
@@ -236,6 +243,10 @@ public class TransposeTrack {
 
   public void setTickPosition(long tickPosition) {
     this.tickPosition = tickPosition;
+  }
+
+  public void setRecording(boolean recording) {
+    this.recording = recording;
   }
 
   /* Takes in a file and generates a transposed sequence from it
@@ -360,7 +371,6 @@ public class TransposeTrack {
               if (shortMessage.getData1() >= percussiveMin
                   || shortMessage.getChannel() == drumChannel) {
                 drumChannels.add(shortMessage.getChannel());
-                System.out.println("Channel " + shortMessage.getChannel() + " is now a drum");
               } else {
                 //remove from the do not transpose list if we are changing to a melodic program
                 drumChannels.remove(shortMessage.getChannel());

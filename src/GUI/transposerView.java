@@ -5,10 +5,10 @@ import GUI.Controllers.Device;
 import GUI.Controllers.FileOpenController;
 import GUI.Controllers.Option;
 import GUI.Controllers.PanelOnController;
+import GUI.Controllers.SelectorController;
 import GUI.Controllers.SequencerCloser;
 import GUI.Controllers.SequencerCommand;
 import GUI.Controllers.SequencerController;
-import GUI.Controllers.SelectorController;
 import GUI.Controllers.SliderController;
 import GUI.Controllers.SubmitController;
 import Transposition.Note;
@@ -18,16 +18,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.List;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiDevice.Info;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
-import javax.sound.midi.Transmitter;
+import javax.sound.midi.Synthesizer;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -84,7 +82,7 @@ public class transposerView implements Updatable{
   private JButton rewindButton = new JButton("◀︎◀︎");
   private JButton stepForwardButton = new JButton("➡️");
   private JButton stepBackwardButton = new JButton("⬅️");
-  private JComboBox<String> sequencerSelector = new JComboBox<>();
+  private JComboBox<String> synthSelector = new JComboBox<>();
   private JComboBox<String> transmitterSelector = new JComboBox<>();
   private JCheckBox filesOnBox = new JCheckBox("View File Select", true);
   private JCheckBox rootsOnBox = new JCheckBox("View Root Setting", true);
@@ -114,16 +112,6 @@ public class transposerView implements Updatable{
       frame.setIconImage(new ImageIcon(iconURL).getImage());
     }
 
-    //setting up midi sequencer
-    Sequencer defaultSequencer = null;
-
-    try {
-      defaultSequencer = MidiSystem.getSequencer();
-      model.setSequencer(defaultSequencer);
-    } catch (MidiUnavailableException e) {
-      model.addStatus(e.getMessage() + ", midi playback will likely not work");
-    }
-
     //setting layouts for global panels
     filePanel.setLayout(new GridBagLayout());
     rootsPanel.setLayout(new GridBagLayout());
@@ -143,27 +131,28 @@ public class transposerView implements Updatable{
     recordButton.addActionListener(new SequencerController(model, SequencerCommand.RECORD));
 
     //setting up midi playback buttons
-    addSequencerController(playButton, SequencerCommand.PLAY, model, defaultSequencer);
-    addSequencerController(stopButton, SequencerCommand.STOP, model, defaultSequencer);
-    addSequencerController(pauseButton, SequencerCommand.PAUSE, model, defaultSequencer);
-    addSequencerController(fastForwardButton, SequencerCommand.FAST_FORWARD, model, defaultSequencer);
-    addSequencerController(rewindButton, SequencerCommand.REWIND, model, defaultSequencer);
-    addSequencerController(stepForwardButton, SequencerCommand.STEP_FORWARD, model, defaultSequencer);
-    addSequencerController(stepBackwardButton, SequencerCommand.STEP_BACKWARD, model, defaultSequencer);
+    addSequencerController(playButton, SequencerCommand.PLAY, model);
+    addSequencerController(stopButton, SequencerCommand.STOP, model);
+    addSequencerController(pauseButton, SequencerCommand.PAUSE, model);
+    addSequencerController(fastForwardButton, SequencerCommand.FAST_FORWARD, model);
+    addSequencerController(rewindButton, SequencerCommand.REWIND, model);
+    addSequencerController(stepForwardButton, SequencerCommand.STEP_FORWARD, model);
+    addSequencerController(stepBackwardButton, SequencerCommand.STEP_BACKWARD, model);
 
     //Setting up selectors
-    List<String> sequencers = new ArrayList<>();
     MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 
-    setUpSelector(model, infos, Device.SEQUENCER, sequencerSelector);
-    sequencerSelector.addActionListener(new SelectorController(model, sequencerSelector,
-        Device.SEQUENCER));
+    setUpSelector(model, infos, Device.SYNTHESIZER, synthSelector);
+    synthSelector.addActionListener(new SelectorController(model, synthSelector,
+        Device.SYNTHESIZER));
+    setDefaultSelection(synthSelector, Device.SYNTHESIZER, model);
 
     setUpSelector(model, infos, Device.TRANSMITTER, transmitterSelector);
     transmitterSelector.addActionListener(new SelectorController(model, transmitterSelector, Device.TRANSMITTER));
+    setDefaultSelection(transmitterSelector, Device.TRANSMITTER, model);
 
-    selectorPanel.add(sequencerSelector);
     selectorPanel.add(transmitterSelector);
+    selectorPanel.add(synthSelector);
 
     //File choosers
     placeInGridAnchor(inputFileLabel, filePanel.getPanel(),0,0,1,1, GridBagConstraints.LINE_START);
@@ -216,9 +205,6 @@ public class transposerView implements Updatable{
     playPanel.add(fastForwardButton);
     playPanel.add(stepForwardButton);
 
-    //TODO: Fix bug here where changing sequencer stops playback working
-    //placeInGrid(sequencerSelector, guiPanel,0, 10,NUM_COLUMNS, 1);
-
     scroller = new JScrollPane(model.getTextField(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     settingsPanel = new JPanel();
     settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
@@ -243,7 +229,7 @@ public class transposerView implements Updatable{
     settingsPanel.add(settingsLabel);
     settingsPanel.add(filesOnBox);
     settingsPanel.add(rootsOnBox);
-    //settingsPanel.add(selectorsOnBox);
+    settingsPanel.add(selectorsOnBox);
     settingsPanel.add(playOnBox);
     settingsPanel.add(customDiatonicBox);
     settingsPanel.add(customChromaticBox);
@@ -263,11 +249,14 @@ public class transposerView implements Updatable{
       JComboBox<String> selector) {
     MidiDevice device;
 
+    selector.addItem("None");
+
     for (int i = 0; i < infos.length; i++) {
       try {
         device = MidiSystem.getMidiDevice(infos[i]);
-        if ((deviceType == Device.SEQUENCER && device instanceof Sequencer) ||
-            (deviceType == Device.TRANSMITTER && device.getTransmitters().size() >= 0)) {
+        if ((deviceType == Device.SYNTHESIZER && device instanceof Synthesizer) ||
+            (deviceType == Device.SEQUENCER && device instanceof Sequencer) ||
+            (deviceType == Device.TRANSMITTER && (device.getMaxTransmitters() > 0 || device.getMaxTransmitters() == -1))) {
           selector.addItem(device.getDeviceInfo().getName());
         }
       } catch (MidiUnavailableException e) {
@@ -276,8 +265,25 @@ public class transposerView implements Updatable{
     }
   }
 
-  private void addSequencerController(JButton button, SequencerCommand command, Model model,
-      Sequencer defaultSequencer) {
+  private void setDefaultSelection(JComboBox<String> selector, Device deviceType, Model model) {
+    try {
+      switch (deviceType) {
+        case SEQUENCER:
+          selector.setSelectedItem(MidiSystem.getSequencer().getDeviceInfo().getName());
+          break;
+        case SYNTHESIZER:
+          selector.setSelectedItem(MidiSystem.getSynthesizer().getDeviceInfo().getName());
+          break;
+        case TRANSMITTER:
+          selector.setSelectedItem("None");
+          break;
+      }
+    } catch (MidiUnavailableException e) {
+      model.addStatus("Error getting default device: " + e.getMessage());
+    }
+  }
+
+  private void addSequencerController(JButton button, SequencerCommand command, Model model) {
     button.addActionListener(new SequencerController(model, command));
   }
 
@@ -366,12 +372,10 @@ public class transposerView implements Updatable{
       gridy += 2;
     }
 
-    //TODO: Get selectors working properly
-    /*
+
     if (selectorPanel.isVisibile()) {
       placeInGridAnchor(selectorPanel.getPanel(), guiPanel, 0, gridy++, 3, 1, GridBagConstraints.CENTER);
     }
-    */
 
 
     placeInGridFill(inputModePanel, guiPanel, 0, gridy, 3, 3, GridBagConstraints.HORIZONTAL);

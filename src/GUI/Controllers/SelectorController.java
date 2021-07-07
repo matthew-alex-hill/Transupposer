@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
 import javax.sound.midi.Transmitter;
 import javax.swing.JComboBox;
 import javax.swing.event.ChangeEvent;
@@ -26,8 +26,19 @@ public class SelectorController extends Controller {
   public void actionPerformed(ActionEvent actionEvent) {
     String name = (String) selector.getSelectedItem();
 
-    Sequencer sequencer = null;
+    if (name.equals("None")) {
+      if (deviceType == Device.SYNTHESIZER) {
+        transposerModel.setSynthesizer(null);
+        transposerModel.addStatus("Synthesizer removed");
+      } else if (deviceType == Device.TRANSMITTER) {
+        transposerModel.setTransmitter(null);
+        transposerModel.addStatus("Transmitter removed");
+      }
+      return;
+    }
+
     Transmitter transmitter = null;
+    Synthesizer synthesizer = null;
 
     MidiDevice device;
     MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
@@ -36,11 +47,13 @@ public class SelectorController extends Controller {
         device = MidiSystem.getMidiDevice(infos[i]);
 
         if (device.getDeviceInfo().getName().equals(name)) {
-          //TODO: This line does not create a valid sequencer
-          if (deviceType == Device.SEQUENCER) {
-            sequencer = (Sequencer) device;
+          if (deviceType == Device.SYNTHESIZER) {
+            synthesizer = (Synthesizer) device;
           } else if (deviceType  == Device.TRANSMITTER) {
             transmitter = device.getTransmitter();
+            if (!device.isOpen()) {
+              device.open();
+            }
           }
         }
       } catch (MidiUnavailableException e) {
@@ -48,9 +61,9 @@ public class SelectorController extends Controller {
       }
     }
 
-    if (sequencer != null) {
-      transposerModel.setSequencer(sequencer);
-      transposerModel.addStatus("Sequencer Updated to " + name);
+    if (synthesizer != null) {
+      transposerModel.setSynthesizer(synthesizer);
+      transposerModel.addStatus("Synthesizer Updated to " + name);
     }
 
     if (transmitter != null) {
