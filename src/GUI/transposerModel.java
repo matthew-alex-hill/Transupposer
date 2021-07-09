@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.Synthesizer;
-import javax.sound.midi.Transmitter;
 import javax.swing.JTextArea;
 
 public class transposerModel implements Model {
@@ -29,7 +29,7 @@ public class transposerModel implements Model {
   private List<TransposeStamp> stamps;
 
   private Sequencer sequencer = null;
-  private Transmitter transmitter = null;
+  private MidiDevice transmitter = null;
   private Synthesizer synthesizer = null;
   private boolean useCustomDiatonic;
   private boolean useCustomChromatic;
@@ -37,6 +37,7 @@ public class transposerModel implements Model {
   private boolean useFileOutput;
   private boolean recording;
   private long tickPosition;
+  private transposeReceiver transposeReceiver;
 
   public transposerModel() {
     this.views = new ArrayList<>();
@@ -64,6 +65,9 @@ public class transposerModel implements Model {
     } catch (MidiUnavailableException e) {
       addStatus(e.getMessage() + ", midi playback will likely not work");
     }
+
+    //Creates new transpose receiver to intercept messages
+    this.transposeReceiver = new transposeReceiver(this);
   }
 
   /* Adds a view to the views list */
@@ -108,10 +112,6 @@ public class transposerModel implements Model {
     }
 
     file = new File(path);
-
-    if (file == null) {
-      addStatus("Invalid File Path: " + path);
-    }
 
     return file;
   }
@@ -236,6 +236,7 @@ public class transposerModel implements Model {
   @Override
   public void changeTransposer() {
     pause();
+    updateTransposeReceiver();
     transposeAndPlay();
   }
 
@@ -375,11 +376,10 @@ public class transposerModel implements Model {
       if (synthesizer != null && !synthesizer.isOpen()) {
         synthesizer.open();
         this.sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
-        if (this.transmitter != null) {
-          this.transmitter.setReceiver(synthesizer.getReceiver());
-        }
+        updateTransposeReceiver();
+        transposeReceiver.setReceiver(synthesizer.getReceiver());
       } else if (this.transmitter != null) {
-        transmitter.setReceiver(null);
+        transmitter.getTransmitter().setReceiver(null);
       }
     } catch (MidiUnavailableException e) {
       addStatus("Error updating synthesizer: " + e.getMessage());
@@ -389,22 +389,31 @@ public class transposerModel implements Model {
   }
 
   @Override
-  public void setTransmitter(Transmitter transmitter) {
+  public void setTransmitter(MidiDevice transmitter) {
+    /*
     if (this.transmitter != null) {
-      transmitter.close();
+      this.transmitter.close();
     }
+    */
 
     this.transmitter = transmitter;
 
     try {
       //Establishes a new transposed receiver which transposes note on/off messages and sends all others
-      if (this.transmitter != null && this.synthesizer != null) {
-        this.transmitter.setReceiver(
-            new transposeReceiver(this, getTransposeTrack(), synthesizer.getReceiver()));
+      if (this.transmitter != null) {
+        if (!this.transmitter.isOpen()) {
+          this.transmitter.open();
+        }
+        updateTransposeReceiver();
+        this.transmitter.getTransmitter().setReceiver(transposeReceiver);
       }
     } catch (MidiUnavailableException e) {
       addStatus("Error updating transmitter: " + e.getMessage());
     }
+  }
+
+  private void updateTransposeReceiver() {
+      transposeReceiver.setTt(getTransposeTrack());
   }
 
   @Override
