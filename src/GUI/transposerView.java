@@ -1,11 +1,12 @@
 package GUI;
 
 import GUI.Controllers.BooleanOptionController;
+import GUI.Controllers.ChannelSelectorController;
 import GUI.Controllers.Device;
 import GUI.Controllers.FileOpenController;
 import GUI.Controllers.Option;
 import GUI.Controllers.PanelOnController;
-import GUI.Controllers.SelectorController;
+import GUI.Controllers.DeviceSelectorController;
 import GUI.Controllers.SequencerCloser;
 import GUI.Controllers.SequencerCommand;
 import GUI.Controllers.SequencerController;
@@ -48,8 +49,11 @@ public class transposerView implements Updatable{
 
   private static int NUM_ROWS = 12;
   private static int NUM_COLUMNS = 8;
+  private static final int NO_CHANNELS = 16;
+
   private final JScrollPane scroller;
   private final JFrame frame;
+
   private JSlider inputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
   private JSlider outputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
   private JTextField inputRootField = new JTextField(12);
@@ -62,14 +66,17 @@ public class transposerView implements Updatable{
   private JButton outputFileBrowse = new JButton("Browse");
   private JTextField inputFileName = new JTextField(50);
   private JTextField outputFileName = new JTextField(50);
-  private JLabel inputRootLabel = new JLabel("Input");
-  private JLabel outputRootLabel = new JLabel("Output");
+  private JLabel inputRootLabel = new JLabel("Input:");
+  private JLabel outputRootLabel = new JLabel("Output:");
   private JLabel rootsLabel = new JLabel("Set Roots");
-  private JLabel inputFileLabel = new JLabel("Input File");
-  private JLabel outputFileLabel = new JLabel("Output File");
+  private JLabel inputFileLabel = new JLabel("Input File:");
+  private JLabel outputFileLabel = new JLabel("Output File:");
   private JLabel inputModeLabel = new JLabel("Input Mode");
   private JLabel outputModeLabel = new JLabel("Output Mode");
   private JLabel settingsLabel = new JLabel("Settings");
+  private JLabel midiInputLabel = new JLabel("Input:");
+  private JLabel midiOutputLabel = new JLabel("Output:");
+  private JLabel midiChannelLabel = new JLabel("Channel:");
   private String darkestLabel = "Dark";
   private String brightestLabel = "Bright";
   private JButton updateButton = new JButton("Update Scales");
@@ -84,11 +91,12 @@ public class transposerView implements Updatable{
   private JButton stepBackwardButton = new JButton("⬅️");
   private JComboBox<String> synthSelector = new JComboBox<>();
   private JComboBox<String> transmitterSelector = new JComboBox<>();
+  private JComboBox<Integer> channelSelector = new JComboBox<>();
   private JCheckBox filesOnBox = new JCheckBox("View File Select", true);
   private JCheckBox rootsOnBox = new JCheckBox("View Root Setting", true);
   private JCheckBox playOnBox = new JCheckBox("View Midi Controls", true);
   private JCheckBox selectorsOnBox = new JCheckBox("View Midi Connections", true);
-  private JCheckBox customDiatonicBox, customChromaticBox, autoUpdateBox, fileOutputBox;
+  private JCheckBox customDiatonicBox, customChromaticBox, autoUpdateBox, fileOutputBox, channelBox;
   private ToggleablePanel filePanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel rootsPanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel selectorPanel = new ToggleablePanel(new JPanel());
@@ -143,16 +151,19 @@ public class transposerView implements Updatable{
     MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 
     setUpSelector(model, infos, Device.SYNTHESIZER, synthSelector);
-    synthSelector.addActionListener(new SelectorController(model, synthSelector,
+    synthSelector.addActionListener(new DeviceSelectorController(model, synthSelector,
         Device.SYNTHESIZER));
     setDefaultSelection(synthSelector, Device.SYNTHESIZER, model);
 
     setUpSelector(model, infos, Device.TRANSMITTER, transmitterSelector);
-    transmitterSelector.addActionListener(new SelectorController(model, transmitterSelector, Device.TRANSMITTER));
+    transmitterSelector.addActionListener(new DeviceSelectorController(model, transmitterSelector, Device.TRANSMITTER));
     setDefaultSelection(transmitterSelector, Device.TRANSMITTER, model);
 
-    selectorPanel.add(transmitterSelector);
-    selectorPanel.add(synthSelector);
+    for (int i = 0; i < NO_CHANNELS; i++) {
+      channelSelector.addItem(i+1);
+    }
+    channelSelector.addActionListener(new ChannelSelectorController(model, channelSelector));
+    channelSelector.setSelectedItem(1);
 
     //File choosers
     placeInGridAnchor(inputFileLabel, filePanel.getPanel(),0,0,1,1, GridBagConstraints.LINE_START);
@@ -213,6 +224,7 @@ public class transposerView implements Updatable{
     customChromaticBox = new JCheckBox("Chromatic Note Customisation", model.isUseCustomChromatic());
     autoUpdateBox = new JCheckBox("Auto Update Transposer", model.isUseAutoUpdate());
     fileOutputBox = new JCheckBox("Enable File Output", model.isUseFileOutput());
+    channelBox = new JCheckBox("Enable Midi Channel Selection", model.isUseChannel());
 
 
     //Setting up panel enable checkboxes
@@ -224,12 +236,14 @@ public class transposerView implements Updatable{
     customChromaticBox.addItemListener(new BooleanOptionController(model, Option.CUSTOM_CHROMATIC));
     autoUpdateBox.addItemListener(new BooleanOptionController(model, Option.AUTO_UPDATE));
     fileOutputBox.addItemListener(new BooleanOptionController(model, Option.FILE_OUTPUT));
+    channelBox.addItemListener(new BooleanOptionController(model, Option.CHANNEL));
 
     //Adding checkboxes to settings
     settingsPanel.add(settingsLabel);
     settingsPanel.add(filesOnBox);
     settingsPanel.add(rootsOnBox);
     settingsPanel.add(selectorsOnBox);
+    settingsPanel.add(channelBox);
     settingsPanel.add(playOnBox);
     settingsPanel.add(customDiatonicBox);
     settingsPanel.add(customChromaticBox);
@@ -374,6 +388,21 @@ public class transposerView implements Updatable{
 
 
     if (selectorPanel.isVisibile()) {
+
+      selectorPanel.getPanel().removeAll();
+
+      selectorPanel.add(midiInputLabel);
+      selectorPanel.add(transmitterSelector);
+
+      if (model.isUseChannel()) {
+        selectorPanel.add(midiChannelLabel);
+        selectorPanel.add(channelSelector);
+        channelSelector.setSelectedItem(channelSelector.getSelectedItem());
+      }
+
+      selectorPanel.add(midiOutputLabel);
+      selectorPanel.add(synthSelector);
+
       placeInGridAnchor(selectorPanel.getPanel(), guiPanel, 0, gridy++, 3, 1, GridBagConstraints.CENTER);
     }
 

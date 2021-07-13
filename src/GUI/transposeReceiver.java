@@ -19,6 +19,9 @@ public class transposeReceiver implements Receiver {
   private final Model model;
   private Sequence recordedSequence;
 
+  private boolean useChannel;
+  private int channel;
+
   /*
   private boolean recording;
   private Track track;
@@ -61,38 +64,76 @@ public class transposeReceiver implements Receiver {
     }
   }
 
+  //Enable channel use and set channel to given value
+  public void setChannel(int channel) {
+    this.useChannel = true;
+    this.channel = channel;
+  }
+
+  public void useDeafaultChannel() {
+    this.useChannel = false;
+  }
+
   @Override
   public void send(MidiMessage midiMessage, long l) {
     int messageType = midiMessage.getStatus() & TransposeTrack.messageMask;
-    ShortMessage shortMessage;
+    ShortMessage shortMessage = null;
+
+    if (midiMessage instanceof ShortMessage) {
+      shortMessage = (ShortMessage) midiMessage;
+    }
 
     //model.addStatus("Sending message " + midiMessage.toString() + " at " + model.getSequencer().getTickPosition());
 
     if (messageType == NOTE_ON || messageType == NOTE_OFF) {
-      shortMessage = (ShortMessage) midiMessage;
 
+      shortMessage = (ShortMessage) midiMessage;
       try {
         if (receiver != null && tt != null) {
-          receiver.send(new ShortMessage(shortMessage.getStatus(),
+          MidiMessage newMessage = new ShortMessage(shortMessage.getStatus(),
               tt.getTransposer().transpose(shortMessage.getData1()),
-              shortMessage.getData2()), l);
+              shortMessage.getData2());
+
+          newMessage = getCorrectedMessage(newMessage);
+
+          receiver.send(newMessage, l);
         }
-        //model.addStatus("Message sent: " + shortMessage.toString());
       } catch (InvalidMidiDataException e) {
-        //model.addStatus("Error Sending Message " + shortMessage.toString() + ": " + e.getMessage());
+        model.addStatus("Error Sending Message " + shortMessage.toString() + ": " + e.getMessage());
       }
+
     } else {
-      //model.addStatus("Message sent: " + midiMessage.toString());
       if (receiver != null) {
-        receiver.send(midiMessage, l);
+        receiver.send(getCorrectedMessage(midiMessage), l);
       }
     }
 
     //add raw midi message to the recorded sequence
     if (recordedSequence != null) {
-      //TODO: these events are not set up properly
-      recordedSequence.getTracks()[0].add(new MidiEvent(midiMessage, model.getSequencer().getTickPosition()));
+        recordedSequence.getTracks()[0]
+            .add(new MidiEvent(getCorrectedMessage(midiMessage),
+                model.getSequencer().getTickPosition()));
+
     }
+  }
+
+  /* Corrects the channel on the midi message to the user selected channel */
+  private MidiMessage getCorrectedMessage(MidiMessage midiMessage) {
+    if (midiMessage instanceof ShortMessage) {
+      ShortMessage shortMessage = (ShortMessage) midiMessage;
+      if (useChannel) {
+        try {
+          return new ShortMessage(shortMessage.getCommand(),
+              channel,
+              shortMessage.getData1(),
+              shortMessage.getData2());
+        } catch (InvalidMidiDataException e) {
+          model.addStatus("Unable to create message in channel " + channel + ": " + e.getMessage());
+          return null;
+        }
+      }
+    }
+    return midiMessage;
   }
 
   @Override

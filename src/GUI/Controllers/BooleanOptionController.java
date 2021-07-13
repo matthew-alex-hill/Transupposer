@@ -30,6 +30,9 @@ public class BooleanOptionController implements ItemListener {
       case FILE_OUTPUT:
         transposerModel.setUseFileOutput(useCustom);
         break;
+      case CHANNEL:
+        transposerModel.setUseChannel(useCustom);
+        break;
     }
     transposerModel.updateObservers();
   }

@@ -78,6 +78,12 @@ public interface Model {
 
   void setTransmitter(MidiDevice transmitter);
 
+  void setChannel(int channel);
+
+  boolean isUseChannel();
+
+  void setUseChannel(boolean useChannel);
+
   Sequencer getSequencer();
 
   Note getCustomNote(Note src);

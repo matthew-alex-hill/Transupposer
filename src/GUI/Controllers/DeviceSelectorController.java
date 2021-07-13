@@ -9,11 +9,11 @@ import javax.sound.midi.Synthesizer;
 import javax.swing.JComboBox;
 import javax.swing.event.ChangeEvent;
 
-public class SelectorController extends Controller {
+public class DeviceSelectorController extends Controller {
   private final JComboBox<String> selector;
   private final Device deviceType;
 
-  public SelectorController(Model transposerModel, JComboBox<String> selector,
+  public DeviceSelectorController(Model transposerModel, JComboBox<String> selector,
       Device deviceType) {
     super(transposerModel);
     this.selector = selector;

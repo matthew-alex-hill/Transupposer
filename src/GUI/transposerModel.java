@@ -38,6 +38,7 @@ public class transposerModel implements Model {
   private boolean useCustomChromatic;
   private boolean useAutoUpdate;
   private boolean useFileOutput;
+  private boolean useChannel;
   private boolean recording;
   private long tickPosition;
   private transposeReceiver transposeReceiver;
@@ -51,6 +52,7 @@ public class transposerModel implements Model {
     this.customIntervals = new HashMap<>();
     this.useCustomDiatonic = false;
     this.useCustomChromatic = false;
+    this.useChannel = false;
     this.useAutoUpdate = false;
     this.useFileOutput = true;
     this.recording = false;
@@ -424,6 +426,26 @@ public class transposerModel implements Model {
 
   private void updateTransposeReceiver() {
       transposeReceiver.setTt(getTransposeTrack());
+  }
+
+  @Override
+  public void setChannel(int channel) {
+    if (useChannel) {
+      transposeReceiver.setChannel(channel);
+    }
+  }
+
+  @Override
+  public boolean isUseChannel() {
+    return useChannel;
+  }
+
+  @Override
+  public void setUseChannel(boolean useChannel) {
+    this.useChannel = useChannel;
+    if (!useChannel) {
+      transposeReceiver.useDeafaultChannel();
+    }
   }
 
   @Override
