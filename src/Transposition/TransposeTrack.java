@@ -155,8 +155,8 @@ public class TransposeTrack {
      Transposes all note on / note off events using latest transposer timestamp after the microsecond position
      Writes transposed notes into outputFile
      Throws a transposition exception in the case of any errors */
-  public void transposeToFile(File inputFile, File outputFile, List<TransposeStamp> stamps) throws TranspositionException {
-    Sequence outputSequence = transposeFile(inputFile, stamps);
+  public void transposeToFile(Sequence sequence, File outputFile, List<TransposeStamp> stamps) throws TranspositionException {
+    Sequence outputSequence = transposeFile(sequence, stamps);
 
     try {
       MidiSystem.write(outputSequence, 1, outputFile);
@@ -261,23 +261,39 @@ public class TransposeTrack {
   /* Takes in a file and a list of transposers at timestamps and generates a transposed sequence from them
    *  Returns the sequence or null if an error occurs
    *  Errors include invalid midi messages in a file, invalid file type or IO exceptions */
-  private Sequence transposeFile(File inputFile, List<TransposeStamp> stamps) throws TranspositionException {
-    return getFileSequence(inputFile, stamps);
+  private Sequence transposeFile(Sequence sequence, List<TransposeStamp> stamps) throws TranspositionException {
+      return makeTransposedSequence(stamps, sequence);
   }
 
   private Sequence getFileSequence(File inputFile, List<TransposeStamp> stamps)
       throws TranspositionException {
     try {
-      Sequence inputSequence = MidiSystem.getSequence(inputFile);
-      Track[] tracks = inputSequence.getTracks();
+      Sequence inputSequence;
+      inputSequence = MidiSystem.getSequence(inputFile);
 
-      Sequence outputSequence = new Sequence(inputSequence.getDivisionType(),
+      return makeTransposedSequence(stamps, inputSequence);
+
+    } catch (InvalidMidiDataException | IOException e) {
+      throw new TranspositionException(e.getMessage());
+    }
+  }
+
+  private Sequence makeTransposedSequence(List<TransposeStamp> stamps, Sequence inputSequence)
+      throws TranspositionException {
+    if (inputSequence == null) {
+      return null;
+    }
+
+    Track[] tracks = inputSequence.getTracks();
+
+    Sequence outputSequence = null;
+    try {
+      outputSequence = new Sequence(inputSequence.getDivisionType(),
           inputSequence.getResolution(),
           tracks.length);
       transposeAll(tracks, outputSequence, stamps);
       return outputSequence;
-
-    } catch (InvalidMidiDataException | IOException e) {
+    } catch (InvalidMidiDataException e) {
       throw new TranspositionException(e.getMessage());
     }
   }

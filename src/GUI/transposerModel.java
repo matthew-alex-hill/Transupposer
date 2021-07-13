@@ -7,13 +7,16 @@ import Transposition.TransposeTrack;
 import Transposition.Transposer;
 import Transposition.TranspositionException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.Synthesizer;
 import javax.swing.JTextArea;
@@ -132,13 +135,18 @@ public class transposerModel implements Model {
 
     try {
       if (recording) {
-        tt.transposeToFile(input, output, stamps);
+        Sequence sequence = MidiSystem.getSequence(input);
+
+        //copies recorded notes in transpose receiver to sequence
+        transposeReceiver.addRecordedNotes(sequence);
+
+        tt.transposeToFile(sequence, output, stamps);
         addStatus("Saved recording to " + outputFile);
       } else {
         tt.transposeToFile(input, output);
         addStatus("Transposed file created at " + outputFile);
       }
-    } catch (TranspositionException e) {
+    } catch (TranspositionException | IOException | InvalidMidiDataException e) {
       addStatus(e.getMessage());
     }
   }
@@ -190,6 +198,7 @@ public class transposerModel implements Model {
     //TODO: Add way of saving recording if song finishes without stop being pressed
     recording = true;
     stamps = new ArrayList<>();
+    transposeReceiver.resetSequence();
     transposeAndPlay();
   }
 
@@ -207,6 +216,7 @@ public class transposerModel implements Model {
       if (recording) {
         transposeToFile();
         recording = false;
+        transposeReceiver.resetSequence();
       }
       addStatus("Stopped sequencer output");
       tickPosition = 0;
@@ -414,6 +424,11 @@ public class transposerModel implements Model {
 
   private void updateTransposeReceiver() {
       transposeReceiver.setTt(getTransposeTrack());
+  }
+
+  @Override
+  public Sequencer getSequencer() {
+    return sequencer;
   }
 
   @Override
