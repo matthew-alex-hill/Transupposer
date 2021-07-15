@@ -4,6 +4,7 @@ import GUI.Model;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+/* Controller for checkboxes that control a boolean option in the model */
 public class BooleanOptionController implements ItemListener {
 
   private final Model transposerModel;

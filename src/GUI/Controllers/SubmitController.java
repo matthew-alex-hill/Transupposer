@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 
+/* Controller for submit buttons on root setters */
 public class SubmitController extends Controller {
 
   private final ScaleType scaleType;

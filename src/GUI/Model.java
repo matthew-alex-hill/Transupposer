@@ -17,7 +17,8 @@ public interface Model {
   /* Runs transposer and plays resulting midi to supplied sequencer */
   void transposeAndPlay();
 
-  //Creates a new list of transpose intervals and time stamps and plays midi file to record changes into list
+  /* Creates a new list of transpose intervals and time stamps and plays midi file to record changes into list
+  *  Resets recording of live notes to start at 0 so they sync with the track */
   void record();
 
   /* Stops the provided sequencer from sending midi messages */
@@ -68,7 +69,7 @@ public interface Model {
 
   void setLiveMode(int liveMode);
 
-  /* Getters for roots */
+  /* Getters and setters for roots */
   Note getInputRoot();
 
   Note getOutputRoot();
@@ -82,18 +83,21 @@ public interface Model {
 
   String getOutputFile();
 
+  /* Getters and setters for devices*/
   void setSynthesizer(Synthesizer synthesizer);
 
   void setTransmitter(MidiDevice transmitter);
 
-  void setChannel(int channel);
+  Sequencer getSequencer();
 
+  /* Custom channel control */
   boolean isUseChannel();
 
   void setUseChannel(boolean useChannel);
 
-  Sequencer getSequencer();
+  void setChannel(int channel);
 
+  /* Custom note control */
   Note getCustomNote(Note src);
 
   boolean containsCustomNote(Note src);
@@ -106,6 +110,7 @@ public interface Model {
 
   void setUseCustomChromatic(boolean useCustomChromatic);
 
+  /* Other boolean settings control */
   boolean isUseAutoUpdate();
 
   void setUseAutoUpdate(boolean useAutoUpdate);

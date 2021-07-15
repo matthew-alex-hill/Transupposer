@@ -54,6 +54,9 @@ public class transposerView implements Updatable{
 
   private final JScrollPane scroller;
   private final JFrame frame;
+  private final double SCREEN_WIDTH_FACTOR = 2.8;
+  private final double SCREEN_HEIGHT_FACTOR = 2.2;
+  private final double mainWeight = 0.8;
 
   private JSlider inputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
   private JSlider outputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
@@ -120,8 +123,8 @@ public class transposerView implements Updatable{
 
     //frame that the the main window is in
     frame = new JFrame(transposerGUI.VERSION_NAME);
-    frame.setSize((int) (screenSize.getWidth() / 2.8),
-        (int) (screenSize.getHeight() / 2.2));
+    frame.setSize((int) (screenSize.getWidth() / SCREEN_WIDTH_FACTOR),
+        (int) (screenSize.getHeight() / SCREEN_HEIGHT_FACTOR));
 
     URL iconURL = getClass().getResource("transupposer icon.png");
 
@@ -178,12 +181,12 @@ public class transposerView implements Updatable{
 
     //File choosers
     placeInGridAnchor(inputFileLabel, filePanel.getPanel(),0,0,1,1, GridBagConstraints.LINE_START);
-    placeInGridFill(inputFileName, filePanel.getPanel(),1,0,6,1, GridBagConstraints.HORIZONTAL);
-    placeInGridAnchor(inputFileBrowse, filePanel.getPanel(),7,0,1,1, GridBagConstraints.LINE_END);
+    placeInGridFill(inputFileName, filePanel.getPanel(),1,0,NUM_COLUMNS-2,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(inputFileBrowse, filePanel.getPanel(),NUM_COLUMNS-1,0,1,1, GridBagConstraints.LINE_END);
 
     placeInGridAnchor(outputFileLabel, filePanel.getPanel(),0,1,1,1, GridBagConstraints.LINE_START);
-    placeInGridFill(outputFileName, filePanel.getPanel(),1,1,6,1, GridBagConstraints.HORIZONTAL);
-    placeInGridAnchor(outputFileBrowse, filePanel.getPanel(),7,1,1,1, GridBagConstraints.LINE_END);
+    placeInGridFill(outputFileName, filePanel.getPanel(),1,1,NUM_COLUMNS-2,1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(outputFileBrowse, filePanel.getPanel(),NUM_COLUMNS-1,1,1,1, GridBagConstraints.LINE_END);
 
     //Root selectors
     placeInGridAnchor(rootsLabel, rootsPanel.getPanel(), 0, 0, NUM_COLUMNS, 1, GridBagConstraints.PAGE_START);
@@ -289,7 +292,7 @@ public class transposerView implements Updatable{
       JComboBox<String> selector) {
     MidiDevice device;
 
-    selector.addItem("None");
+    selector.addItem(transposerGUI.selectNothingText);
 
     for (int i = 0; i < infos.length; i++) {
       try {
@@ -315,7 +318,7 @@ public class transposerView implements Updatable{
           selector.setSelectedItem(MidiSystem.getSynthesizer().getDeviceInfo().getName());
           break;
         case TRANSMITTER:
-          selector.setSelectedItem("None");
+          selector.setSelectedItem(transposerGUI.selectNothingText);
           break;
       }
     } catch (MidiUnavailableException e) {
@@ -515,8 +518,8 @@ public class transposerView implements Updatable{
     framePanel.setLayout(new GridBagLayout());
 
     placeInFrame(new JSeparator(SwingConstants.VERTICAL), framePanel, 1,0, 0);
-    placeInFrame(guiPanel, framePanel, 0,1,0.8);
-    placeInFrame(settingsPanel, framePanel, 1,1, 0.2);
+    placeInFrame(guiPanel, framePanel, 0,1, mainWeight);
+    placeInFrame(settingsPanel, framePanel, 1,1, 1-mainWeight);
 
     framePanel.setVisible(false);
     frame.getContentPane().removeAll();

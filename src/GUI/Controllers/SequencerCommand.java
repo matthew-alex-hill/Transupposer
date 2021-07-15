@@ -1,5 +1,6 @@
 package GUI.Controllers;
 
+/* Enum for commands that can be given to midi sequencer in SequencerController */
 public enum SequencerCommand {
   PLAY,
   PAUSE,

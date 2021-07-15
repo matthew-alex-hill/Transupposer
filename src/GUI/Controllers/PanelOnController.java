@@ -5,6 +5,7 @@ import GUI.ToggleablePanel;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+/* Controller for checkbox to toggle on/off panel */
 public class PanelOnController implements ItemListener {
   
   protected ToggleablePanel panel;

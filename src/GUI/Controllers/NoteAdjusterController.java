@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.event.ChangeEvent;
 
+/* Controller for custom note setter drop downs */
 public class NoteAdjusterController extends Controller {
 
   Note base;

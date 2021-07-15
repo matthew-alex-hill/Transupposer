@@ -21,11 +21,11 @@ public class SequencerCloser implements WindowListener {
   @Override
   public void windowClosing(WindowEvent windowEvent) {
     model.stop();
+    model.getSequencer().close();
   }
 
   @Override
   public void windowClosed(WindowEvent windowEvent) {
-
   }
 
   @Override

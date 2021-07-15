@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.event.ChangeEvent;
 
+/* Controller for channel select dropdown */
 public class ChannelSelectorController extends Controller {
 
   private final JComboBox<Integer> selector;
@@ -18,9 +19,13 @@ public class ChannelSelectorController extends Controller {
 
   @Override
   public void actionPerformed(ActionEvent actionEvent) {
-    int channel = ((int) selector.getSelectedItem()) - 1;
-
-    transposerModel.setChannel(channel);
+    if (selector != null) {
+      Integer channel = (Integer) selector.getSelectedItem();
+      if (channel != null) {
+        channel = channel - 1;
+        transposerModel.setChannel(channel);
+      }
+    }
   }
 
   @Override

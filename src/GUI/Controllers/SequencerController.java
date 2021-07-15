@@ -4,6 +4,7 @@ import GUI.Model;
 import java.awt.event.ActionEvent;
 import javax.swing.event.ChangeEvent;
 
+/* COntroller for midi playback buttons and buttons which use the sequencer to perform a single action */
 public class SequencerController extends Controller {
 
   private static final long OFFSET = 10000000;

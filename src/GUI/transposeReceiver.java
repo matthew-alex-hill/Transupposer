@@ -15,17 +15,13 @@ import javax.sound.midi.Track;
 public class transposeReceiver implements Receiver {
 
   private TransposeTrack tt;
+  //TODO: Add second tt to go from live root to input root for the recorded sequence
   private Receiver receiver;
   private final Model model;
   private Sequence recordedSequence;
 
   private boolean useChannel;
   private int channel;
-
-  /*
-  private boolean recording;
-  private Track track;
-  */
 
   public transposeReceiver(Model model) {
     this.tt = null;
@@ -83,12 +79,11 @@ public class transposeReceiver implements Receiver {
       shortMessage = (ShortMessage) midiMessage;
     }
 
-    //model.addStatus("Sending message " + midiMessage.toString() + " at " + model.getSequencer().getTickPosition());
-
     if (messageType == NOTE_ON || messageType == NOTE_OFF) {
 
       shortMessage = (ShortMessage) midiMessage;
       try {
+        //Try transposing the message
         if (receiver != null && tt != null) {
           MidiMessage newMessage = new ShortMessage(shortMessage.getStatus(),
               tt.getTransposer().transpose(shortMessage.getData1()),
