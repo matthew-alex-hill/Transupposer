@@ -8,14 +8,15 @@ import javax.swing.event.ChangeEvent;
 /* Change listener for the mode sliders */
 public class SliderController extends Controller {
 
-  boolean isInput;
+  private final ScaleType scaleType;
   private final JSlider slider;
 
-  public SliderController(Model transposerModel, JSlider slider, boolean isInput) {
+  public SliderController(Model transposerModel, JSlider slider,
+      ScaleType scaleType) {
     super(transposerModel);
 
     this.slider = slider;
-    this.isInput = isInput;
+    this.scaleType = scaleType;
   }
 
   @Override
@@ -26,10 +27,15 @@ public class SliderController extends Controller {
   @Override
   public void stateChanged(ChangeEvent changeEvent) {
     int val = (3 * slider.getValue() + 6) % 7;
-    if (isInput) {
-      transposerModel.setInputMode(val);
-    } else {
-      transposerModel.setOutputMode(val);
+    switch (scaleType) {
+      case INPUT:
+        transposerModel.setInputMode(val);
+        break;
+      case OUTPUT:
+        transposerModel.setOutputMode(val);
+        break;
+      case LIVE:
+        transposerModel.setLiveMode(val);
     }
   }
 }

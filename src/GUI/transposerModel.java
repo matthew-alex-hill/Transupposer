@@ -26,8 +26,8 @@ public class transposerModel implements Model {
   private final Map<Note, Note> customIntervals;
   private final StatusBox statusBox;
   private final List<Updatable> views;
-  private int inputMode, outputMode;
-  private Note inputRoot, outputRoot;
+  private int inputMode, outputMode, liveMode;
+  private Note inputRoot, outputRoot, liveRoot;
   private String inputFile, outputFile;
   private List<TransposeStamp> stamps;
 
@@ -39,9 +39,10 @@ public class transposerModel implements Model {
   private boolean useAutoUpdate;
   private boolean useFileOutput;
   private boolean useChannel;
+  private boolean useLiveScale;
   private boolean recording;
   private long tickPosition;
-  private transposeReceiver transposeReceiver;
+  private final transposeReceiver transposeReceiver;
 
   public transposerModel() {
     this.views = new ArrayList<>();
@@ -49,10 +50,13 @@ public class transposerModel implements Model {
     this.inputRoot = new Note(0);
     this.outputMode = 0;
     this.outputRoot = new Note(0);
+    this.liveMode = 0;
+    this.liveRoot = new Note(0);
     this.customIntervals = new HashMap<>();
     this.useCustomDiatonic = false;
     this.useCustomChromatic = false;
     this.useChannel = false;
+    this.useLiveScale = false;
     this.useAutoUpdate = false;
     this.useFileOutput = true;
     this.recording = false;
@@ -88,7 +92,7 @@ public class transposerModel implements Model {
     }
   }
 
-  /* Creates a new transpose track from current fields */
+  /* Creates a new TransposeTrack from current fields using the file input scale*/
   private TransposeTrack getTransposeTrack() {
     if (useCustomDiatonic && useCustomChromatic) {
       try {
@@ -106,6 +110,15 @@ public class transposerModel implements Model {
     }
 
     return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
+  }
+
+  /* Creates a new TransposeTrack using the live midi input scale */
+  private TransposeTrack getLiveTransposeTrack() {
+    if (useLiveScale) {
+      return new TransposeTrack(liveRoot, liveMode, outputRoot, outputMode);
+    }
+
+    return getTransposeTrack();
   }
 
   /* Creates a file given a path and ads an error status if it cannot */
@@ -317,6 +330,17 @@ public class transposerModel implements Model {
   }
 
   @Override
+  public int getLiveMode() {
+    return liveMode;
+  }
+
+  @Override
+  public void setLiveMode(int liveMode) {
+    this.liveMode = liveMode;
+    updateTransposeReceiver();
+  }
+
+  @Override
   public Note getInputRoot() {
     return inputRoot;
   }
@@ -348,6 +372,24 @@ public class transposerModel implements Model {
     }
     autochangeTransposer();
     clearCustomIntervals();
+    updateObservers();
+  }
+
+  @Override
+  public Note getLiveRoot() {
+    return liveRoot;
+  }
+
+  @Override
+  public void setLiveRoot(Note liveRoot) {
+    if (liveRoot == null) {
+      statusBox.addStatus("Invalid note entered, cannot change live root");
+    } else {
+      this.liveRoot = liveRoot;
+      statusBox.addStatus("Live root updated to " + liveRoot);
+    }
+
+    updateTransposeReceiver();
     updateObservers();
   }
 
@@ -425,7 +467,7 @@ public class transposerModel implements Model {
   }
 
   private void updateTransposeReceiver() {
-      transposeReceiver.setTt(getTransposeTrack());
+      transposeReceiver.setTt(getLiveTransposeTrack());
   }
 
   @Override
@@ -506,6 +548,16 @@ public class transposerModel implements Model {
   @Override
   public boolean isRecording() {
     return recording;
+  }
+
+  @Override
+  public boolean isUseLiveScale() {
+    return useLiveScale;
+  }
+
+  @Override
+  public void setUseLiveScale(boolean useLiveScale) {
+    this.useLiveScale = useLiveScale;
   }
 
   @Override

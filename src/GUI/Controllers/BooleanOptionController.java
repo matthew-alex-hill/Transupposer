@@ -33,6 +33,9 @@ public class BooleanOptionController implements ItemListener {
       case CHANNEL:
         transposerModel.setUseChannel(useCustom);
         break;
+      case LIVE_SCALE:
+        transposerModel.setUseLiveScale(useCustom);
+        break;
     }
     transposerModel.updateObservers();
   }

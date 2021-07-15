@@ -64,10 +64,18 @@ public interface Model {
 
   int getOutputMode();
 
+  int getLiveMode();
+
+  void setLiveMode(int liveMode);
+
   /* Getters for roots */
   Note getInputRoot();
 
   Note getOutputRoot();
+
+  Note getLiveRoot();
+
+  void setLiveRoot(Note liveRoot);
 
   /* Getters for file paths */
   String getInputFile();
@@ -107,6 +115,10 @@ public interface Model {
   void setUseFileOutput(boolean useFileOutput);
 
   boolean isRecording();
+
+  boolean isUseLiveScale();
+
+  void setUseLiveScale(boolean useLiveScale);
 
   /* Gets the status text field for the model */
   JTextArea getTextField();

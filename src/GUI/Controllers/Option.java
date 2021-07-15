@@ -5,5 +5,6 @@ public enum Option {
   CUSTOM_CHROMATIC,
   AUTO_UPDATE,
   FILE_OUTPUT,
-  CHANNEL
+  CHANNEL,
+  LIVE_SCALE
 }

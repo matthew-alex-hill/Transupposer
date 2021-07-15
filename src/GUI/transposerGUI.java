@@ -1,7 +1,7 @@
 package GUI;
 
 public class transposerGUI {
-  public final static String VERSION_NAME = "Transupposer v0.9";
+  public final static String VERSION_NAME = "Transupposer v1.0";
 
   public transposerModel tm = new transposerModel();
 

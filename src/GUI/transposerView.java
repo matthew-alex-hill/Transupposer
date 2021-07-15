@@ -7,6 +7,7 @@ import GUI.Controllers.FileOpenController;
 import GUI.Controllers.Option;
 import GUI.Controllers.PanelOnController;
 import GUI.Controllers.DeviceSelectorController;
+import GUI.Controllers.ScaleType;
 import GUI.Controllers.SequencerCloser;
 import GUI.Controllers.SequencerCommand;
 import GUI.Controllers.SequencerController;
@@ -47,7 +48,7 @@ import javax.swing.WindowConstants;
 
 public class transposerView implements Updatable{
 
-  private static int NUM_ROWS = 12;
+  private static int NUM_ROWS = 18;
   private static int NUM_COLUMNS = 8;
   private static final int NO_CHANNELS = 16;
 
@@ -56,10 +57,13 @@ public class transposerView implements Updatable{
 
   private JSlider inputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
   private JSlider outputModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
+  private JSlider liveModeSlider = new JSlider(JSlider.HORIZONTAL, 0, 6, 5);
   private JTextField inputRootField = new JTextField(12);
   private JTextField outputRootField = new JTextField(12);
+  private JTextField liveRootField = new JTextField(12);
   private JButton inputRootButton = new JButton("Submit");
   private JButton outputRootButton = new JButton("Submit");
+  private JButton liveRootButton = new JButton("Submit");
   private JFileChooser inputFileChooser = new JFileChooser();
   private JFileChooser outputFileChooser = new JFileChooser();
   private JButton inputFileBrowse = new JButton("Browse");
@@ -68,11 +72,15 @@ public class transposerView implements Updatable{
   private JTextField outputFileName = new JTextField(50);
   private JLabel inputRootLabel = new JLabel("Input:");
   private JLabel outputRootLabel = new JLabel("Output:");
+  private JLabel liveRootLabel = new JLabel("Live Input Root:");
+  private JLabel liveScaleLabel = new JLabel("Live Input Scale");
+  private JLabel fileScaleLabel = new JLabel("File Scales");
   private JLabel rootsLabel = new JLabel("Set Roots");
   private JLabel inputFileLabel = new JLabel("Input File:");
   private JLabel outputFileLabel = new JLabel("Output File:");
   private JLabel inputModeLabel = new JLabel("Input Mode");
   private JLabel outputModeLabel = new JLabel("Output Mode");
+  private JLabel liveModeLabel = new JLabel("Live Input Mode");
   private JLabel settingsLabel = new JLabel("Settings");
   private JLabel midiInputLabel = new JLabel("Input:");
   private JLabel midiOutputLabel = new JLabel("Output:");
@@ -96,12 +104,13 @@ public class transposerView implements Updatable{
   private JCheckBox rootsOnBox = new JCheckBox("View Root Setting", true);
   private JCheckBox playOnBox = new JCheckBox("View Midi Controls", true);
   private JCheckBox selectorsOnBox = new JCheckBox("View Midi Connections", true);
-  private JCheckBox customDiatonicBox, customChromaticBox, autoUpdateBox, fileOutputBox, channelBox;
+  private JCheckBox customDiatonicBox, customChromaticBox, autoUpdateBox, fileOutputBox, channelBox, liveScaleBox;
   private ToggleablePanel filePanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel rootsPanel = new ToggleablePanel(new JPanel());
   private ToggleablePanel selectorPanel = new ToggleablePanel(new JPanel());
   private JPanel inputModePanel = new JPanel();
   private JPanel outputModePanel = new JPanel();
+  private JPanel liveScalePanel = new JPanel();
   private ToggleablePanel playPanel = new ToggleablePanel(new JPanel());
   private JPanel settingsPanel = new JPanel();
   private JPanel guiPanel = new JPanel();
@@ -125,14 +134,16 @@ public class transposerView implements Updatable{
     rootsPanel.setLayout(new GridBagLayout());
     inputModePanel.setLayout(new GridBagLayout());
     outputModePanel.setLayout(new GridBagLayout());
+    liveScalePanel.setLayout(new GridBagLayout());
 
     //adding listeners to buttons
     inputFileBrowse.addActionListener(FileOpenController.newInputFileOpenController(model));
 
     outputFileBrowse.addActionListener(FileOpenController.newOutputFileOpenController(model));
 
-    inputRootButton.addActionListener(new SubmitController(model, true, inputRootField));
-    outputRootButton.addActionListener(new SubmitController(model, false, outputRootField));
+    inputRootButton.addActionListener(new SubmitController(model, ScaleType.INPUT, inputRootField));
+    outputRootButton.addActionListener(new SubmitController(model, ScaleType.OUTPUT, outputRootField));
+    liveRootButton.addActionListener(new SubmitController(model, ScaleType.LIVE, liveRootField));
 
     transposeButton.addActionListener(new SequencerController(model, SequencerCommand.SAVE));
     updateButton.addActionListener(new SequencerController(model, SequencerCommand.UPDATE));
@@ -175,7 +186,7 @@ public class transposerView implements Updatable{
     placeInGridAnchor(outputFileBrowse, filePanel.getPanel(),7,1,1,1, GridBagConstraints.LINE_END);
 
     //Root selectors
-    placeInGridAnchor(rootsLabel, rootsPanel.getPanel(), 0, 0, NUM_COLUMNS, 1, GridBagConstraints.CENTER);
+    placeInGridAnchor(rootsLabel, rootsPanel.getPanel(), 0, 0, NUM_COLUMNS, 1, GridBagConstraints.PAGE_START);
     placeInGridAnchor(inputRootLabel, rootsPanel.getPanel(), 0,1,1,1, GridBagConstraints.LINE_START);
     placeInGridFill(inputRootField, rootsPanel.getPanel(),1,1,2,1, GridBagConstraints.HORIZONTAL);
     placeInGrid(inputRootButton, rootsPanel.getPanel(), 3,1,1,1);
@@ -194,18 +205,30 @@ public class transposerView implements Updatable{
     modes.put(6, new JTextArea("Lydian"));
 
     //creating and placing mode sliders
-    setUpSlider(modes, inputModeSlider, model, true);
-    setUpSlider(modes, outputModeSlider, model, false);
+    setUpSlider(modes, inputModeSlider, model, ScaleType.INPUT);
+    setUpSlider(modes, outputModeSlider, model, ScaleType.OUTPUT);
+    setUpSlider(modes, liveModeSlider, model, ScaleType.LIVE);
 
     placeInGrid(inputModeLabel, inputModePanel, 0, 0, NUM_COLUMNS, 1);
     placeInGridFill(inputModeSlider, inputModePanel, 0, 1, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
     placeInGridAnchor(new JLabel(darkestLabel), inputModePanel, 0,2, 1,1, GridBagConstraints.FIRST_LINE_START);
-    placeInGridAnchor(new JLabel(brightestLabel), inputModePanel, 7, 2,1,1, GridBagConstraints.FIRST_LINE_END);
+    placeInGridAnchor(new JLabel(brightestLabel), inputModePanel, NUM_COLUMNS-1, 2,1,1, GridBagConstraints.FIRST_LINE_END);
 
     placeInGrid(outputModeLabel, outputModePanel, 0, 0, NUM_COLUMNS, 1);
     placeInGridFill(outputModeSlider, outputModePanel, 0, 1, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
     placeInGridAnchor(new JLabel(darkestLabel), outputModePanel, 0,2, 1,1, GridBagConstraints.FIRST_LINE_START);
-    placeInGridAnchor(new JLabel(brightestLabel), outputModePanel, 7, 2,1,1, GridBagConstraints.FIRST_LINE_END);
+    placeInGridAnchor(new JLabel(brightestLabel), outputModePanel, NUM_COLUMNS-1, 2,1,1, GridBagConstraints.FIRST_LINE_END);
+
+    //creating live scale panel
+    placeInGridAnchor(liveScaleLabel, liveScalePanel, 0, 0, NUM_COLUMNS, 2, GridBagConstraints.LAST_LINE_START);
+    placeInGridAnchor(liveRootLabel, liveScalePanel, 2,2, 2,1, GridBagConstraints.CENTER);
+    placeInGrid(liveRootField, liveScalePanel, 4, 2,1,1);
+    placeInGrid(liveRootButton, liveScalePanel, 5,2,1,1);
+    placeInGrid(liveModeLabel, liveScalePanel, 0, 3, NUM_COLUMNS, 1);
+    placeInGridFill(liveModeSlider, liveScalePanel, 0, 4, NUM_COLUMNS, 1, GridBagConstraints.HORIZONTAL);
+    placeInGridAnchor(new JLabel(darkestLabel), liveScalePanel, 0,5, 1,1, GridBagConstraints.FIRST_LINE_START);
+    placeInGridAnchor(new JLabel(brightestLabel), liveScalePanel, NUM_COLUMNS-1, 5,1,1, GridBagConstraints.FIRST_LINE_END);
+
 
     //Midi Playback buttons
     playPanel.add(stepBackwardButton);
@@ -225,7 +248,7 @@ public class transposerView implements Updatable{
     autoUpdateBox = new JCheckBox("Auto Update Transposer", model.isUseAutoUpdate());
     fileOutputBox = new JCheckBox("Enable File Output", model.isUseFileOutput());
     channelBox = new JCheckBox("Enable Midi Channel Selection", model.isUseChannel());
-
+    liveScaleBox = new JCheckBox("Separate Live and File Scale", model.isUseLiveScale());
 
     //Setting up panel enable checkboxes
     filesOnBox.addItemListener(new PanelOnController(model, filePanel));
@@ -237,6 +260,8 @@ public class transposerView implements Updatable{
     autoUpdateBox.addItemListener(new BooleanOptionController(model, Option.AUTO_UPDATE));
     fileOutputBox.addItemListener(new BooleanOptionController(model, Option.FILE_OUTPUT));
     channelBox.addItemListener(new BooleanOptionController(model, Option.CHANNEL));
+    liveScaleBox.addItemListener(new BooleanOptionController(model, Option.LIVE_SCALE));
+
 
     //Adding checkboxes to settings
     settingsPanel.add(settingsLabel);
@@ -244,6 +269,7 @@ public class transposerView implements Updatable{
     settingsPanel.add(rootsOnBox);
     settingsPanel.add(selectorsOnBox);
     settingsPanel.add(channelBox);
+    settingsPanel.add(liveScaleBox);
     settingsPanel.add(playOnBox);
     settingsPanel.add(customDiatonicBox);
     settingsPanel.add(customChromaticBox);
@@ -303,12 +329,12 @@ public class transposerView implements Updatable{
 
   /* Sets up a slider with correct snapping, tick spacing and labels and gives them a change listener */
   private void setUpSlider(Dictionary<Integer, JComponent> modes, JSlider slider,
-      Model model, boolean isInput) {
+      Model model, ScaleType scaleType) {
     slider.setMajorTickSpacing(1);
     slider.setSnapToTicks(true);
     slider.setLabelTable(modes);
     slider.setPaintLabels(true);
-    slider.addChangeListener(new SliderController(model, slider, isInput));
+    slider.addChangeListener(new SliderController(model, slider, scaleType));
   }
 
   /* Places an item onto grid bag layout panel */
@@ -374,18 +400,16 @@ public class transposerView implements Updatable{
     inputFileName.setText(model.getInputFile());
     outputFileName.setText(model.getOutputFile());
 
+    inputRootField.setText(model.getInputRoot().toString());
+    outputRootField.setText(model.getOutputRoot().toString());
+    liveRootField.setText(model.getLiveRoot().toString());
+
     guiPanel.removeAll();
 
     if (filePanel.isVisibile()) {
       placeInGridFill(filePanel.getPanel(), guiPanel, 0, gridy, 3, 2, GridBagConstraints.BOTH);
       gridy += 2;
     }
-
-    if (rootsPanel.isVisibile()) {
-      placeInGridFill(rootsPanel.getPanel(), guiPanel, 0, gridy, 3, 2, GridBagConstraints.HORIZONTAL);
-      gridy += 2;
-    }
-
 
     if (selectorPanel.isVisibile()) {
 
@@ -406,6 +430,20 @@ public class transposerView implements Updatable{
       placeInGridAnchor(selectorPanel.getPanel(), guiPanel, 0, gridy++, 3, 1, GridBagConstraints.CENTER);
     }
 
+    if (model.isUseLiveScale()) {
+      placeInGridFill(liveScalePanel, guiPanel, 0, gridy, 3,5, GridBagConstraints.HORIZONTAL);
+      gridy+=5;
+    }
+
+    if (rootsPanel.isVisibile()) {
+      placeInGridAnchor(fileScaleLabel, guiPanel, 0, gridy, 3,2,GridBagConstraints.LAST_LINE_START);
+      gridy += 2;
+      placeInGridFill(rootsPanel.getPanel(), guiPanel, 0, gridy, 3, 2, GridBagConstraints.HORIZONTAL);
+      gridy += 2;
+    } else {
+      placeInGridAnchor(fileScaleLabel, guiPanel, 0, gridy, 3,2,GridBagConstraints.LAST_LINE_START);
+      gridy += 2;
+    }
 
     placeInGridFill(inputModePanel, guiPanel, 0, gridy, 3, 3, GridBagConstraints.HORIZONTAL);
     gridy += 3;
