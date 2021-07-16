@@ -14,7 +14,8 @@ import javax.sound.midi.Track;
 
 public class transposeReceiver implements Receiver {
 
-  private TransposeTrack tt;
+  private TransposeTrack outputTransposer;
+  private TransposeTrack baseTransposer;
   //TODO: Add second tt to go from live root to input root for the recorded sequence
   private Receiver receiver;
   private final Model model;
@@ -24,14 +25,18 @@ public class transposeReceiver implements Receiver {
   private int channel;
 
   public transposeReceiver(Model model) {
-    this.tt = null;
+    this.outputTransposer = null;
     this.receiver = null;
     this.model = model;
     resetSequence();
   }
 
-  public void setTt(TransposeTrack tt) {
-    this.tt = tt;
+  public void setOutputTransposer(TransposeTrack outputTransposer) {
+    this.outputTransposer = outputTransposer;
+  }
+
+  public void setBaseTransposer(TransposeTrack baseTransposer) {
+    this.baseTransposer = baseTransposer;
   }
 
   public void setReceiver(Receiver receiver) {
@@ -74,6 +79,7 @@ public class transposeReceiver implements Receiver {
   public void send(MidiMessage midiMessage, long l) {
     int messageType = midiMessage.getStatus() & TransposeTrack.messageMask;
     ShortMessage shortMessage = null;
+    MidiMessage recordedMessage = midiMessage;
 
     if (midiMessage instanceof ShortMessage) {
       shortMessage = (ShortMessage) midiMessage;
@@ -84,14 +90,23 @@ public class transposeReceiver implements Receiver {
       shortMessage = (ShortMessage) midiMessage;
       try {
         //Try transposing the message
-        if (receiver != null && tt != null) {
-          MidiMessage newMessage = new ShortMessage(shortMessage.getStatus(),
-              tt.getTransposer().transpose(shortMessage.getData1()),
-              shortMessage.getData2());
+        if (receiver != null && outputTransposer != null) {
+          ShortMessage newMessage;
 
-          newMessage = getCorrectedMessage(newMessage);
+          //If input scale is different to live scale transpose from live to input scale
+          if (baseTransposer != null) {
+            newMessage = new ShortMessage(shortMessage.getStatus(),
+                baseTransposer.getTransposer().transpose(shortMessage.getData1()),
+                shortMessage.getData2());
+          } else {
+            newMessage = shortMessage;
+          }
 
-          receiver.send(newMessage, l);
+          recordedMessage = getCorrectedMessage(newMessage);
+
+          receiver.send(new ShortMessage(recordedMessage.getStatus(),
+              outputTransposer.getTransposer().transpose(newMessage.getData1()),
+              newMessage.getData2()), l);
         }
       } catch (InvalidMidiDataException e) {
         model.addStatus("Error Sending Message " + shortMessage.toString() + ": " + e.getMessage());
@@ -99,7 +114,7 @@ public class transposeReceiver implements Receiver {
 
     } else {
       if (receiver != null) {
-        receiver.send(getCorrectedMessage(midiMessage), l);
+        receiver.send(getCorrectedMessage(recordedMessage), l);
       }
     }
 

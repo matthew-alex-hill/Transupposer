@@ -112,15 +112,6 @@ public class transposerModel implements Model {
     return new TransposeTrack(inputRoot, inputMode, outputRoot, outputMode);
   }
 
-  /* Creates a new TransposeTrack using the live midi input scale */
-  private TransposeTrack getLiveTransposeTrack() {
-    if (useLiveScale) {
-      return new TransposeTrack(liveRoot, liveMode, outputRoot, outputMode);
-    }
-
-    return getTransposeTrack();
-  }
-
   /* Creates a file given a path and ads an error status if it cannot */
   private File loadFile(String path, String errorMessage) {
     File file;
@@ -467,7 +458,14 @@ public class transposerModel implements Model {
   }
 
   private void updateTransposeReceiver() {
-      transposeReceiver.setTt(getLiveTransposeTrack());
+    //Sets base transposer to go from live to input and output transposer from input to output
+    if (useLiveScale) {
+      transposeReceiver.setBaseTransposer(new TransposeTrack(liveRoot, liveMode, inputRoot, inputMode));
+    } else {
+      transposeReceiver.setBaseTransposer(null);
+    }
+
+    transposeReceiver.setOutputTransposer(getTransposeTrack());
   }
 
   @Override
