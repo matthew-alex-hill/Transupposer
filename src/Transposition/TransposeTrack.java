@@ -49,7 +49,17 @@ public class TransposeTrack {
   //Loads data into existing transpose map
   public TransposeTrack(Note inputRoot, int inputMode,
       Note outputRoot, int outputMode, TransposeMap transposer) {
-    makeTransposeTrack(inputRoot, inputMode, outputRoot, outputMode, transposer);
+    TransposeMap tmpMap = new Transposer();
+
+    for (int i = 0; i < 12; i++) {
+      Note tmp = new Note(i);
+      if (transposer.containsInterval(tmp)) {
+        tmpMap.addInterval(new Note(i), transposer.getInterval(i));
+        tmpMap.addOctaveIfNeeded(tmpMap.getInterval(tmp).getNoteNumber(), i,
+            outputRoot.getNoteNumber() - inputRoot.getNoteNumber());
+      }
+    }
+    makeTransposeTrack(inputRoot, inputMode, outputRoot, outputMode, tmpMap);
   }
 
   //Uses an existig transpose map to generate only an octaves map
@@ -57,14 +67,15 @@ public class TransposeTrack {
       throws TranspositionException {
     this.inputRoot = inputRoot;
     this.outputRoot = outputRoot;
-    this.transposer = transposer;
+    this.transposer = new Transposer();
 
     for (int i = 0; i < 12; i++) {
       Note tmp = new Note(i);
       if (!transposer.containsInterval(tmp)) {
         throw new TranspositionException("Note " + tmp + " not found in transpose map");
       }
-      transposer.addOctaveIfNeeded(transposeNote(tmp).getNoteNumber(), i,
+      this.transposer.addInterval(new Note(i), transposer.getInterval(i));
+      this.transposer.addOctaveIfNeeded(transposeNote(tmp).getNoteNumber(), i,
           outputRoot.getNoteNumber() - inputRoot.getNoteNumber());
     }
   }
