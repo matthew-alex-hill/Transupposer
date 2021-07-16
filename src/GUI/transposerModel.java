@@ -41,6 +41,7 @@ public class transposerModel implements Model {
   private boolean useChannel;
   private boolean useLiveScale;
   private boolean recording;
+  private boolean playing;
   private long tickPosition;
   private final transposeReceiver transposeReceiver;
 
@@ -60,6 +61,7 @@ public class transposerModel implements Model {
     this.useAutoUpdate = false;
     this.useFileOutput = true;
     this.recording = false;
+    this.playing = false;
 
     this.inputFile = null;
     this.outputFile = null;
@@ -187,6 +189,8 @@ public class transposerModel implements Model {
         tt.setTickPosition(tickPosition);
       }
       addStatus("Playing transposed Midi from " + inputFile);
+
+      playing = true;
     } catch (TranspositionException e) {
       addStatus(e.getMessage());
     }
@@ -226,6 +230,7 @@ public class transposerModel implements Model {
       }
       addStatus("Stopped sequencer output");
       tickPosition = 0;
+      playing = false;
     } catch (TranspositionException e) {
       addStatus(e.getMessage());
     }
@@ -246,14 +251,19 @@ public class transposerModel implements Model {
       addStatus(e.getMessage());
     }
 
+    playing = false;
     tickPosition = tt.getTickPosition();
   }
 
   @Override
   public void changeTransposer() {
-    pause();
     updateTransposeReceiver();
-    transposeAndPlay();
+
+    //If live playback is enabled restart audio with new transposer
+    if (playing) {
+      pause();
+      transposeAndPlay();
+    }
   }
 
   @Override
@@ -556,6 +566,7 @@ public class transposerModel implements Model {
   @Override
   public void setUseLiveScale(boolean useLiveScale) {
     this.useLiveScale = useLiveScale;
+    updateTransposeReceiver();
   }
 
   @Override

@@ -48,7 +48,7 @@ import javax.swing.WindowConstants;
 
 public class transposerView implements Updatable{
 
-  private static int NUM_ROWS = 18;
+  private static int NUM_ROWS = 24;
   private static int NUM_COLUMNS = 8;
   private static final int NO_CHANNELS = 16;
 
@@ -512,7 +512,7 @@ public class transposerView implements Updatable{
       placeInGrid(updateButton, guiPanel, 1, gridy++, 1, 1);
     }
 
-    placeInGridFill(scroller, guiPanel, 0, gridy, 3,3, GridBagConstraints.BOTH);
+    placeInGridFill(scroller, guiPanel, 0, gridy, 3,9, GridBagConstraints.BOTH);
 
     JPanel framePanel = new JPanel();
     framePanel.setLayout(new GridBagLayout());
